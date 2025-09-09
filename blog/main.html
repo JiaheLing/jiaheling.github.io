@@ -7,17 +7,20 @@
   <meta name="description" content="A simple, bilingual blog (English & Chinese)." />
   <link rel="icon" href="data:," />
 
+  <!-- Plausible Analytics (moved to head) -->
+  <script defer data-domain="jiaheling.github.io/blog/main.html" src="https://plausible.io/js/script.js"></script>
+
   <style>
     /* --- Base / layout --- */
     :root {
-      --bg: #ffffff;      /* pure white page background */
+      --bg: #ffffff;
       --text: #111111;
-      --muted: #6b7280;   /* gray-500 */
-      --link: #111111;    /* links look like text */
+      --muted: #6b7280;
+      --link: #111111;
       --link-visited: #111111;
-      --card: #f3f4f6;    /* slightly darker summary bar (gray-100) */
-      --border: #e5e7eb;  /* gray-200 */
-      --maxw: 72ch;       /* a touch larger for CJK */
+      --card: #f3f4f6;
+      --border: #e5e7eb;
+      --maxw: 72ch;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -26,7 +29,7 @@
         --muted: #9ca3af;
         --link: #e5e7eb;
         --link-visited: #e5e7eb;
-        --card: #101826;  /* darker bar in dark mode */
+        --card: #101826;
         --border: #1f2937;
       }
     }
@@ -48,20 +51,16 @@
     header { margin-bottom: .5rem; }
     header h1 { font-size: 1.6rem; margin: 0 0 .25rem; color: var(--link); }
 
-    /* Links look like regular text for better reading */
     a { color: var(--link); text-decoration: none; }
     a:visited { color: var(--link-visited); }
 
-    /* --- Controls --- */
     .controls { margin: .75rem 0 1rem; display:flex; gap:.5rem; flex-wrap:wrap; }
     .controls button { border:1px solid var(--border); background:var(--card); color: var(--link); padding:.35rem .7rem; border-radius:999px; cursor:pointer; }
     .controls button:focus{ outline:2px solid var(--border); outline-offset:2px; }
 
-    /* --- Post list --- */
     .posts { list-style: none; padding: 0; margin: 0; }
     .post { margin: 0 0 .8rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: transparent; }
 
-    /* Compact summary bar */
     details.post summary { list-style:none; cursor:pointer; padding: .75rem .9rem; background: var(--card); display:block; }
     details.post[open] summary { border-bottom: 1px solid var(--border); }
     details.post summary::-webkit-details-marker { display:none; }
@@ -75,7 +74,6 @@
     .post h2 { margin: .1rem 0 .3rem; font-size: 1.15rem; color: var(--link); }
     .post p.excerpt { margin: 0; color: var(--muted); }
 
-    /* CONTENT: pure white, compact padding */
     .post .content { background: var(--bg); padding: .85rem .95rem 1rem; }
     .prose p { margin: .6rem 0; }
     .prose h3 { margin: .9rem 0 .4rem; font-size: 1.05rem; }
@@ -101,7 +99,6 @@
 
     <main>
       <ul class="posts" id="postList">
-        <!-- POST: Mixed language example -->
         <li>
           <details class="post" data-post="Writing in two languages / 双语写作">
             <summary>
@@ -122,7 +119,6 @@
           </details>
         </li>
 
-        <!-- POST: Chinese example -->
         <li>
           <details class="post" data-post="你好，世界">
             <summary>
@@ -132,7 +128,7 @@
                   <h2 lang="zh-Hans">你好，世界</h2>
                   <p class="excerpt" lang="zh-Hans">写作很简单：从今天开始记录想法与日常。</p>
                 </div>
-                <div class="summary-right"><button class="summary-action" type="button" aria-expanded="false" data-label-show="详情" data-label-hide="收起">详情</button></div>
+                <div class="summary-right"><button class="summary-action" type="button" aria-expanded="false" data-label-show="更多" data-label-hide="收起">更多</button></div>
               </div>
             </summary>
             <div class="content prose" lang="zh-Hans">
@@ -143,7 +139,6 @@
           </details>
         </li>
 
-        <!-- POST: English example -->
         <li>
           <details class="post" data-post="Hello, World">
             <summary>
@@ -172,22 +167,19 @@
   </div>
 
   <script>
-    // Footer year
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    // Sort posts newest → oldest using the <time datetime> inside each post
     (function sortPosts(){
       const list = document.getElementById('postList');
       const items = Array.from(list.querySelectorAll('li'));
       items.sort((a, b) => {
         const da = new Date(a.querySelector('time')?.getAttribute('datetime') || 0).getTime();
         const db = new Date(b.querySelector('time')?.getAttribute('datetime') || 0).getTime();
-        return db - da; // newest first
+        return db - da;
       });
       items.forEach(li => list.appendChild(li));
     })();
 
-    // Toggle buttons (bilingual-safe via data labels)
     document.querySelectorAll('details.post').forEach(d => {
       const btn = d.querySelector('.summary-action');
       if (!btn) return;
@@ -199,7 +191,6 @@
       update();
     });
 
-    // Expand/Collapse all controls
     const expandAll = document.getElementById('expandAll');
     const collapseAll = document.getElementById('collapseAll');
     expandAll?.addEventListener('click', () => {
@@ -211,9 +202,8 @@
       document.querySelectorAll('.summary-action').forEach(b => { const show = b.dataset.labelShow || 'Details'; b.textContent = show; b.setAttribute('aria-expanded', 'false'); });
     });
 
-    // (Optional) Track post opens once with Plausible
     (function trackPostOpensOnce(){
-      if (typeof plausible !== 'function') return; // only if Plausible is loaded
+      if (typeof plausible !== 'function') return;
       const opened = new Set();
       document.querySelectorAll('details.post').forEach(d => {
         d.addEventListener('toggle', () => {
@@ -225,8 +215,5 @@
       });
     })();
   </script>
-
-  <!-- Analytics -->
-  <script defer data-domain="jiaheling.github.io/blog/main.html" src="https://plausible.io/js/script.js"></script>
 </body>
 </html>
