@@ -10,23 +10,23 @@
   <style>
     /* --- Base / layout --- */
     :root {
-      --bg: #ffffff;
+      --bg: #ffffff;      /* pure white page background */
       --text: #111111;
-      --muted: #6b7280; /* gray-500 */
-      --link: #111111;  /* set links to black */
-      --link-visited: #111111; /* visited also black */
-      --card: #f8fafc; /* slate-50 */
-      --border: #e5e7eb; /* gray-200 */
-      --maxw: 72ch; /* a touch larger for CJK */
+      --muted: #6b7280;   /* gray-500 */
+      --link: #111111;    /* links look like text */
+      --link-visited: #111111;
+      --card: #f3f4f6;    /* slightly darker summary bar (gray-100) */
+      --border: #e5e7eb;  /* gray-200 */
+      --maxw: 72ch;       /* a touch larger for CJK */
     }
     @media (prefers-color-scheme: dark) {
       :root {
         --bg: #0b0f14;
         --text: #e5e7eb;
         --muted: #9ca3af;
-        --link: #e5e7eb;  /* black equivalent in dark mode */
+        --link: #e5e7eb;
         --link-visited: #e5e7eb;
-        --card: #0f172a;
+        --card: #101826;  /* darker bar in dark mode */
         --border: #1f2937;
       }
     }
@@ -34,7 +34,7 @@
     html, body { height: 100%; }
     body {
       margin: 0;
-      font: 16px/1.8 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial,
+      font: 16px/1.75 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial,
             "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC",
             "Apple Color Emoji", "Segoe UI Emoji";
       color: var(--text);
@@ -43,52 +43,54 @@
       text-rendering: optimizeLegibility;
     }
 
-    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1rem 4rem; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 1.5rem 1rem 3rem; }
 
-    header { margin-bottom: 1rem; }
-    header h1 { font-size: 1.875rem; margin: 0 0 .25rem; color: var(--link); }
-    header p { margin: 0; color: var(--muted); }
+    header { margin-bottom: .5rem; }
+    header h1 { font-size: 1.6rem; margin: 0 0 .25rem; color: var(--link); }
 
     /* Links look like regular text for better reading */
     a { color: var(--link); text-decoration: none; }
     a:visited { color: var(--link-visited); }
 
     /* --- Controls --- */
-    .controls { margin: 1rem 0 1.5rem; display:flex; gap:.5rem; flex-wrap:wrap; }
-    .controls button { border:1px solid var(--border); background:var(--card); color: var(--link); padding:.45rem .8rem; border-radius:999px; cursor:pointer; }
+    .controls { margin: .75rem 0 1rem; display:flex; gap:.5rem; flex-wrap:wrap; }
+    .controls button { border:1px solid var(--border); background:var(--card); color: var(--link); padding:.35rem .7rem; border-radius:999px; cursor:pointer; }
     .controls button:focus{ outline:2px solid var(--border); outline-offset:2px; }
 
     /* --- Post list --- */
     .posts { list-style: none; padding: 0; margin: 0; }
-    .post { margin: 0 0 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+    .post { margin: 0 0 .8rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: transparent; }
 
-    details.post summary { list-style:none; cursor:pointer; padding: 1rem 1rem .75rem; border-radius: 12px; }
+    /* Compact summary bar */
+    details.post summary { list-style:none; cursor:pointer; padding: .75rem .9rem; background: var(--card); display:block; }
     details.post[open] summary { border-bottom: 1px solid var(--border); }
     details.post summary::-webkit-details-marker { display:none; }
 
-    .summary-row { display:flex; gap:.75rem; align-items:baseline; justify-content:space-between; }
+    .summary-row { display:flex; gap:.6rem; align-items:baseline; justify-content:space-between; }
     .summary-left { min-width:0; }
     .summary-right { white-space:nowrap; color: var(--muted); font-size:.9rem; }
-    .summary-action { border: none; background: transparent; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; padding:0; }
+    .summary-action { border: none; background: transparent; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; padding:0; font-size:.95rem; }
 
-    .post time { color: var(--muted); font-size: .9rem; display:block; }
-    .post h2 { margin: .25rem 0 .5rem; font-size: 1.25rem; color: var(--link); }
-    .post p.excerpt { margin: 0 0 .25rem; color: var(--muted); }
+    .post time { color: var(--muted); font-size: .85rem; display:block; }
+    .post h2 { margin: .1rem 0 .3rem; font-size: 1.15rem; color: var(--link); }
+    .post p.excerpt { margin: 0; color: var(--muted); }
 
-    .post .content { padding: 1rem; }
+    /* CONTENT: pure white, compact padding */
+    .post .content { background: var(--bg); padding: .85rem .95rem 1rem; }
+    .prose p { margin: .6rem 0; }
+    .prose h3 { margin: .9rem 0 .4rem; font-size: 1.05rem; }
     .prose img { max-width: 100%; height: auto; border-radius: 8px; }
     .prose figure { margin: 0; }
     .prose figcaption { color: var(--muted); font-size: .9rem; text-align: center; }
     code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    pre { background: var(--card); border: 1px solid var(--border); padding: 1rem; border-radius: 8px; overflow: auto; }
+    pre { background: var(--card); border: 1px solid var(--border); padding: .75rem; border-radius: 8px; overflow: auto; }
 
-    footer { margin-top: 3rem; color: var(--muted); font-size: .9rem; }
+    footer { margin-top: 2rem; color: var(--muted); font-size: .9rem; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <!-- Title is plain text (no link) -->
       <h1>J. Ling's Blogs</h1>
     </header>
 
@@ -99,16 +101,9 @@
 
     <main>
       <ul class="posts" id="postList">
-        <!-- HOW TO ADD POSTS
-             - Duplicate a <li> block.
-             - Set <time datetime="YYYY-MM-DD">. Sorting is automatic (newest → oldest).
-             - Write a brief <p class="excerpt"> and full content in <div class="content">.
-             - No links needed; click Details to toggle.
-        -->
-
         <!-- POST: Mixed language example -->
         <li>
-          <details class="post">
+          <details class="post" data-post="Writing in two languages / 双语写作">
             <summary>
               <div class="summary-row">
                 <div class="summary-left">
@@ -116,7 +111,7 @@
                   <h2>Writing in two languages / 双语写作</h2>
                   <p class="excerpt">Thoughts on bilingual blogging — <span lang="zh-Hans">如何在同一篇文章里平衡 English 和 中文。</span></p>
                 </div>
-                <div class="summary-right"><button class="summary-action" type="button" aria-expanded="false">Details</button></div>
+                <div class="summary-right"><button class="summary-action" type="button" aria-expanded="false" data-label-show="Details" data-label-hide="Hide">Details</button></div>
               </div>
             </summary>
             <div class="content prose">
@@ -129,7 +124,7 @@
 
         <!-- POST: Chinese example -->
         <li>
-          <details class="post">
+          <details class="post" data-post="你好，世界">
             <summary>
               <div class="summary-row">
                 <div class="summary-left">
@@ -137,7 +132,7 @@
                   <h2 lang="zh-Hans">你好，世界</h2>
                   <p class="excerpt" lang="zh-Hans">写作很简单：从今天开始记录想法与日常。</p>
                 </div>
-                <div class="summary-right"><button class="summary-action" type="button" aria-expanded="false">详情</button></div>
+                <div class="summary-right"><button class="summary-action" type="button" aria-expanded="false" data-label-show="详情" data-label-hide="收起">详情</button></div>
               </div>
             </summary>
             <div class="content prose" lang="zh-Hans">
@@ -150,7 +145,7 @@
 
         <!-- POST: English example -->
         <li>
-          <details class="post">
+          <details class="post" data-post="Hello, World">
             <summary>
               <div class="summary-row">
                 <div class="summary-left">
@@ -158,7 +153,7 @@
                   <h2>Hello, World</h2>
                   <p class="excerpt">A short note about why I started this blog.</p>
                 </div>
-                <div class="summary-right"><button class="summary-action" type="button" aria-expanded="false">Details</button></div>
+                <div class="summary-right"><button class="summary-action" type="button" aria-expanded="false" data-label-show="Details" data-label-hide="Hide">Details</button></div>
               </div>
             </summary>
             <div class="content prose">
@@ -192,21 +187,16 @@
       items.forEach(li => list.appendChild(li));
     })();
 
-    // Make the "Details" button inside <summary> toggle the details element without double-toggling
+    // Toggle buttons (bilingual-safe via data labels)
     document.querySelectorAll('details.post').forEach(d => {
       const btn = d.querySelector('.summary-action');
       if (!btn) return;
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        d.open = !d.open;
-        btn.textContent = d.open ? (btn.textContent === '详情' ? '收起' : 'Hide') : (btn.textContent === '收起' ? '详情' : 'Details');
-        btn.setAttribute('aria-expanded', String(d.open));
-      });
-      d.addEventListener('toggle', () => {
-        btn.textContent = d.open ? (btn.textContent === '详情' ? '收起' : 'Hide') : (btn.textContent === '收起' ? '详情' : 'Details');
-        btn.setAttribute('aria-expanded', String(d.open));
-      });
+      const show = btn.dataset.labelShow || 'Details';
+      const hide = btn.dataset.labelHide || 'Hide';
+      const update = () => { btn.textContent = d.open ? hide : show; btn.setAttribute('aria-expanded', String(d.open)); };
+      btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); d.open = !d.open; update(); });
+      d.addEventListener('toggle', update);
+      update();
     });
 
     // Expand/Collapse all controls
@@ -214,29 +204,29 @@
     const collapseAll = document.getElementById('collapseAll');
     expandAll?.addEventListener('click', () => {
       document.querySelectorAll('details.post').forEach(d => d.open = true);
-      document.querySelectorAll('.summary-action').forEach(b => {
-        b.textContent = (b.textContent === '详情' || b.textContent === '收起') ? '收起' : 'Hide';
-        b.setAttribute('aria-expanded', 'true');
-      });
+      document.querySelectorAll('.summary-action').forEach(b => { const hide = b.dataset.labelHide || 'Hide'; b.textContent = hide; b.setAttribute('aria-expanded', 'true'); });
     });
     collapseAll?.addEventListener('click', () => {
       document.querySelectorAll('details.post').forEach(d => d.open = false);
-      document.querySelectorAll('.summary-action').forEach(b => {
-        b.textContent = (b.textContent === 'Hide' || b.textContent === 'Details') ? 'Details' : '详情';
-        b.setAttribute('aria-expanded', 'false');
-      });
+      document.querySelectorAll('.summary-action').forEach(b => { const show = b.dataset.labelShow || 'Details'; b.textContent = show; b.setAttribute('aria-expanded', 'false'); });
     });
+
+    // (Optional) Track post opens once with Plausible
+    (function trackPostOpensOnce(){
+      if (typeof plausible !== 'function') return; // only if Plausible is loaded
+      const opened = new Set();
+      document.querySelectorAll('details.post').forEach(d => {
+        d.addEventListener('toggle', () => {
+          if (d.open) {
+            const id = d.dataset.post || d.querySelector('h2')?.textContent?.trim() || 'Untitled';
+            if (!opened.has(id)) { plausible('Post Opened', { props: { post: id } }); opened.add(id); }
+          }
+        });
+      });
+    })();
   </script>
 
-  <!--
-    OPTIONAL ANALYTICS — add ONE provider snippet below to count views invisibly.
-
-    1) Plausible (simple, privacy‑friendly). Replace YOURDOMAIN with your GitHub Pages domain.
-       <script defer data-domain="YOURDOMAIN.github.io" src="https://plausible.io/js/script.js"></script>
-
-    2) Cloudflare Web Analytics (free). Replace TOKEN.
-       <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "YOUR_TOKEN_HERE"}'></script>
-  -->
-  <script defer data-domain="jiaheling.github.io" src="https://plausible.io/js/script.js"></script>
+  <!-- Analytics -->
+  <script defer data-domain="jiaheling.github.io/blog/main.html" src="https://plausible.io/js/script.js"></script>
 </body>
 </html>
