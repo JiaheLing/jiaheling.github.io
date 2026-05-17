@@ -4,58 +4,81 @@
 window.PHOTOLAB = {
   "digital": [
     {
-      "filename": "digital-caucasus-mountain.png",
+      "filename": "acadia1.jpeg",
+      "device": "X100VI",
+      "location": "Bar Harbor, Maine",
+      "description": "Acadia National Park autumn coastline",
+      "date": "2025-11"
+    },
+    {
+      "filename": "acadia2.jpeg",
+      "device": "X100VI",
+      "location": "Bar Harbor, Maine",
+      "description": "Pier over water at Acadia National Park",
+      "date": "2025-11"
+    },
+    {
+      "filename": "biscayne.jpg",
       "device": "iPhone 17 Pro",
-      "location": "Kazbegi, Georgia",
-      "description": "Autumn mountains and snow-covered peaks.",
-      "date": "2025-08"
+      "location": "Miami, FL",
+      "description": "Biscayne National Park coastline",
+      "date": "2026-04"
     },
     {
-      "filename": "digital-flower-hill.png",
-      "device": "Fujifilm X100VI",
-      "location": "Biei, Hokkaido",
-      "description": "Rolling flower hills with a lone pink tree.",
-      "date": "2025-08"
+      "filename": "lake_powell.jpeg",
+      "device": "iPhone 17 Pro",
+      "location": "Page, Arizona",
+      "description": "Lake Powell marina and desert cliffs",
+      "date": "2026-01"
     },
     {
-      "filename": "digital-forest-wetland.png",
-      "device": "Fujifilm X100VI",
-      "location": "Pacific Northwest",
-      "description": "Quiet green wetland under a dense forest canopy.",
-      "date": "2025-08"
-    },
-    {
-      "filename": "digital-sandbar-lagoon.png",
-      "device": "DJI Mini 4 Pro",
-      "location": "Lake Michigan",
-      "description": "Aerial view of shallow water, sandbars, and wind texture.",
-      "date": "2025-08"
+      "filename": "lower_antelope_canyon.jpg",
+      "device": "X100VI",
+      "location": "Navajo Nation, AZ",
+      "description": "Lower Antelope Canyon",
+      "date": "2026-01"
     }
   ],
   "film": [
     {
-      "filename": "film-aerial-forest.png",
-      "device": "Olympus 35RC",
-      "film": "Kodak Portra 400",
-      "location": "Northwoods",
-      "description": "Top-down forest textures and a narrow stream.",
-      "date": "2025-08"
+      "filename": "centralpark.jpeg",
+      "device": "Rollei 35S",
+      "film": "Kodak Ektachrome E100",
+      "location": "New York, NY",
+      "description": "Cherry blossoms at Central Park.",
+      "date": "2026-04"
     },
     {
-      "filename": "film-flower-meadow.png",
+      "filename": "dc1.jpg",
       "device": "Rollei 35S",
-      "film": "Kodak Ektar 100",
-      "location": "Furano, Hokkaido",
-      "description": "Open meadow with a small cluster of trees.",
-      "date": "2025-08"
+      "film": "Kodak Ektachrome E100",
+      "location": "Washington, D.C.",
+      "description": "Jefferson Memorial across the Tidal Basin.",
+      "date": "2026-04"
     },
     {
-      "filename": "film-glass-garden.png",
+      "filename": "dc2.jpg",
       "device": "Rollei 35S",
-      "film": "Fujifilm Pro 400H",
-      "location": "Indoor garden",
-      "description": "Soft light through glass, water, grass, and stairs.",
-      "date": "2025-08"
+      "film": "Kodak Ektachrome E100",
+      "location": "Washington, D.C.",
+      "description": "Washington Monument across the Tidal Basin.",
+      "date": "2026-04"
+    },
+    {
+      "filename": "everglades1.jpg",
+      "device": "Rollei 35S",
+      "film": "Kodak Ektachrome E100",
+      "location": "Miami, FL",
+      "description": "Shark Valley Observation Tower in Everglades National Park.",
+      "date": "2026-04"
+    },
+    {
+      "filename": "everglades2.jpg",
+      "device": "Rollei 35S",
+      "film": "Kodak Ektachrome E100",
+      "location": "Miami, FL",
+      "description": "Lily-covered wetland in Everglades National Park.",
+      "date": "2026-04"
     }
   ]
 };
