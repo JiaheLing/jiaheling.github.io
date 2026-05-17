@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projects · Jiahe Ling</title>
+  <meta name="description" content="Projects page for Jiahe Ling." />
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-title" href="../index.html">Jiahe Ling</a>
+
+    <nav class="nav" aria-label="Main navigation">
+      <a href="../index.html">Home</a>
+      <a href="education.html">Education</a>
+      <a href="research.html">Research</a>
+      <a class="active" href="projects.html">Projects</a>
+      <a href="photolab.html">PhotoLab</a>
+    </nav>
+  </header>
+
+  <main class="page content-page projects-page">
+    <h1>Projects</h1>
+
+    <section class="project-focus-grid" aria-label="Focus areas">
+      <article class="project-focus-card">
+        <p class="focus-kicker">Focus Area</p>
+        <h2>Transportation Analytics &amp; Operations Research</h2>
+        <p>Transit systems, fleet operations, routing, scheduling, facility location, and optimization models.</p>
+      </article>
+
+      <article class="project-focus-card">
+        <p class="focus-kicker">Focus Area</p>
+        <h2>Machine Learning &amp; Statistical Modeling</h2>
+        <p>Generative models, Bayesian inference, computer vision, NLP, supervised learning, and model evaluation.</p>
+      </article>
+
+      <article class="project-focus-card">
+        <p class="focus-kicker">Focus Area</p>
+        <h2>Data Engineering &amp; DBMS</h2>
+        <p>Database systems, big data pipelines, distributed systems, high-performance computing, and analytics infrastructure.</p>
+      </article>
+    </section>
+
+
+    <section class="project-updates" aria-label="Project news">
+      <h2>News</h2>
+
+      <ul class="project-update-list">
+        <li>
+          <time>Ongoing</time>
+          <span>
+            Refining the Columbia Evening Shuttle analysis with queueing and simulation-based fleet-sizing recommendations.
+          </span>
+        </li>
+
+        <li>
+          <time>Ongoing</time>
+          <span>
+            Preparing a concise public summary of industry work on multi-scenario bus dispatching and real-time routing.
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="project-section" aria-label="Project filters">
+      <div class="section-heading-row compact">
+        <div>
+          <p class="section-kicker">Portfolio</p>
+          <h2>Project Experience</h2>
+        </div>
+      </div>
+
+      <div class="project-filters" role="group" aria-label="Filter projects">
+        <button class="project-filter active" data-filter="all" type="button">All (17)</button>
+        <button class="project-filter" data-filter="transportation" type="button">Transportation / OR (4)</button>
+        <button class="project-filter" data-filter="ml" type="button">Machine Learning (5)</button>
+        <button class="project-filter" data-filter="systems" type="button">Data Engineering / DBMS (3)</button>
+        <button class="project-filter" data-filter="industry" type="button">Industry (1)</button>
+        <button class="project-filter" data-filter="other" type="button">Other (5)</button>
+      </div>
+    </section>
+
+    <section class="project-portfolio" aria-label="Project portfolio">
+      <section class="project-category" data-category="transportation">
+        <div class="project-category-heading">
+          <div>
+            <p class="section-kicker">Transportation / OR</p>
+            <h2>Transportation Analytics &amp; Operations Research</h2>
+          </div>
+          <span>4 projects</span>
+        </div>
+
+        <article class="project-item" data-tags="transportation industry">
+          <div class="project-main">
+            <h3>Multi-Scenario Bus Dispatching and Real-Time Routing Engine</h3>
+            <p>
+              Architected a bus-dispatching engine supporting fixed-route, dynamic ride-pooling, and fusion modes to improve
+              fleet utilization and passenger journey times. Formulated and solved real-time routing models, including
+              open pickup-and-delivery TSP for dynamic cruising and fixed-endpoint TSPP for segment-based route deviations.
+            </p>
+            <div class="project-tags">
+              <span>Bus dispatching</span>
+              <span>Dynamic routing</span>
+              <span>PDP-TSP</span>
+              <span>TSPP</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>Industry</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3>Columbia University Evening Shuttle</h3>
+            <p>
+              A hybrid fleet-sizing study for Columbia's evening shuttle service, combining an analytical M/M/s
+              queueing benchmark with agent-based simulation to evaluate driver staffing, wait time, time in system,
+              and driver utilization under alternative operating configurations.
+            </p>
+            <div class="project-tags">
+              <span>Fleet sizing</span>
+              <span>M/M/s queueing</span>
+              <span>Agent-based simulation</span>
+              <span>Open PDP-TSP</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>Columbia University</span>
+            <span>IEOR 4418</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/cs-project/jling9_hzhang784_report.pdf" target="_blank" rel="noopener">Chicago Divvy Bike Supply &amp; Station Management</a></h3>
+            <p>
+              Developed integer and mixed-integer optimization models for bike supply, station selection, and
+              pricing-aware station management in Chicago's Divvy bike-share network.
+            </p>
+            <div class="project-tags">
+              <span>Facility location</span>
+              <span>Bike positioning</span>
+              <span>IP/MIP</span>
+              <span>Pricing optimization</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>CS/ECE/ISyE 524</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3><a href="https://github.com/JiaheLing/ChildCareDeserts" target="_blank" rel="noopener">Eliminating Child Care Deserts in New York State: A Budget-Minimizing Siting and Expansion Model</a></h3>
+            <p>
+              Formulated an integer optimization framework for deciding where to build new child-care facilities
+              and how to expand existing capacity under ZIP-level coverage, age-specific capacity, and distance
+              separation constraints.
+            </p>
+            <div class="project-tags">
+              <span>Facility location</span>
+              <span>Capacity expansion</span>
+              <span>MIP</span>
+              <span>Public-service access planning</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>Columbia University</span>
+            <span>IEOR 4004</span>
+          </aside>
+        </article>
+      </section>
+
+      <section class="project-category" data-category="ml">
+        <div class="project-category-heading">
+          <div>
+            <p class="section-kicker">Machine Learning</p>
+            <h2>Machine Learning &amp; Statistical Modeling</h2>
+          </div>
+          <span>5 projects</span>
+        </div>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3><a href="../resources/projects/final_sling.pdf" target="_blank" rel="noopener">Diffusion Models with a Time-Conditioned U-Net on MNIST</a></h3>
+            <p>
+              Implemented and studied denoising diffusion models with a time-conditioned U-Net architecture for image generation.
+            </p>
+            <div class="project-tags">
+              <span>Diffusion models</span>
+              <span>U-Net</span>
+              <span>Generative ML</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>University of Chicago</span>
+            <span>STAT 37601</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3>Probabilistic Machine Learning and Variational Inference Implementations</h3>
+            <p>
+              Python implementation portfolio covering Bayesian linear regression, hidden Markov models, Gibbs sampling,
+              EM, coordinate-ascent variational inference, variational autoencoders, Poisson matrix factorization with
+              mean-field variational inference, variable elimination, and forward-backward inference.
+            </p>
+            <div class="project-tags">
+              <span>Bayesian inference</span>
+              <span>Latent-variable models</span>
+              <span>Variational inference</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>University of Chicago</span>
+            <span>STAT 34800</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3><a href="https://sites.google.com/wisc.edu/639project/" target="_blank" rel="noopener">Computer Vision for Quality Inspection of Manufacturing Product</a></h3>
+            <p>
+              Applied computer vision methods to manufacturing quality inspection, combining texture features,
+              convolutional neural networks, and model interpretation.
+            </p>
+            <div class="project-tags">
+              <span>Computer vision</span>
+              <span>CNN</span>
+              <span>SHAP</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>CS 639</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3><a href="https://engrxiv.org/preprint/view/3139/version/4428" target="_blank" rel="noopener">Online Twitter Bot Detection</a></h3>
+            <p>
+              NLP project for identifying automated social-media accounts using neural networks and transformer-based modeling.
+            </p>
+            <div class="project-tags">
+              <span>NLP</span>
+              <span>Transformers</span>
+              <span>Classification</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>ECE/CS 539</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/451Report.Group7.pdf" target="_blank" rel="noopener">Exploring Card Fraud Transaction</a></h3>
+            <p>
+              Applied supervised learning methods, including decision trees, k-nearest neighbors, logistic regression,
+              and related classifiers, to card-fraud transaction detection.
+            </p>
+            <div class="project-tags">
+              <span>Supervised learning</span>
+              <span>Fraud detection</span>
+              <span>Classification</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>STAT 451</span>
+          </aside>
+        </article>
+      </section>
+
+      <section class="project-category" data-category="systems">
+        <div class="project-category-heading">
+          <div>
+            <p class="section-kicker">Systems / Data Engineering</p>
+            <h2>Data Engineering &amp; DBMS</h2>
+          </div>
+          <span>3 projects</span>
+        </div>
+
+        <article class="project-item" data-tags="systems">
+          <div class="project-main">
+            <h3><a href="https://github.com/cs544-wisc/f23/tree/main" target="_blank" rel="noopener">Introduction to Big Data Systems</a></h3>
+            <p>
+              Built data-system projects using PyArrow, Docker, HDFS, Spark, HBase, Cassandra, and Kafka Streams.
+            </p>
+            <div class="project-tags">
+              <span>PyArrow</span>
+              <span>Spark</span>
+              <span>Kafka Streams</span>
+              <span>Cassandra</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>CS 544</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="systems">
+          <div class="project-main">
+            <h3><a href="https://github.com/uwmadison-cs564" target="_blank" rel="noopener">Database Management Systems (DBMS): Design and Implementation</a></h3>
+            <p>
+              Completed SQL query projects and C++ implementation work for core database internals, including buffer management
+              and join algorithms.
+            </p>
+            <div class="project-tags">
+              <span>SQL</span>
+              <span>C++</span>
+              <span>Buffer manager</span>
+              <span>Join algorithms</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>CS 564</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="systems">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/report-1.html" target="_blank" rel="noopener">AdTracking Fraud Detection</a></h3>
+            <p>
+              High-performance analytics project demonstrating large-scale data processing and model experimentation using
+              UW-Madison's HTCondor-based high-performance computing environment.
+            </p>
+            <div class="project-tags">
+              <span>HPC</span>
+              <span>HTCondor</span>
+              <span>Fraud detection</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>STAT 479 / STAT 405 / 605</span>
+          </aside>
+        </article>
+      </section>
+
+      <section class="project-category" data-category="other">
+        <div class="project-category-heading">
+          <div>
+            <p class="section-kicker">Other</p>
+            <h2>Applied Data Analysis, Visualization &amp; Economics</h2>
+          </div>
+          <span>5 projects</span>
+        </div>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3>A Spatial Temporal Visualization Tool of Climate-Demographic Interactions and Built Environments</h3>
+            <p>
+              Built a geospatial visualization tool connecting climate projections, population, land use, housing density,
+              and city boundaries across long-horizon RCP 4.5 / RCP 8.5 scenarios.
+            </p>
+            <div class="project-tags">
+              <span>Geospatial visualization</span>
+              <span>Climate analytics</span>
+              <span>Raster processing</span>
+              <span>Built environment</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>Columbia University</span>
+            <span>IEOR 4511</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat424.pdf" target="_blank" rel="noopener">Statistical Experiment Design &amp; Analysis</a></h3>
+            <p>
+              Experimental design and statistical analysis project using ANOVA and Fisher's LSD procedure.
+            </p>
+            <div class="project-tags">
+              <span>ANOVA</span>
+              <span>Fisher LSD</span>
+              <span>Experimental design</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>STAT/ME 424</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/FinalPaper_Group9.pdf" target="_blank" rel="noopener">Unpacking the Paradox of Profit Margins: An Analysis of Market Concentration and Economic Dynamics in the U.S. Meat Processing Industry</a></h3>
+            <p>
+              Economic analysis of market concentration and profit margins in the U.S. meat processing industry.
+              <a href="https://pages.cs.wisc.edu/~sling/econ-project/Presentation_Group9.pdf" target="_blank" rel="noopener">Presentation</a>.
+            </p>
+            <div class="project-tags">
+              <span>Industrial organization</span>
+              <span>Market concentration</span>
+              <span>Economics</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>ECON 458</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat240.html" target="_blank" rel="noopener">Analysis of NHL Player Statistics</a></h3>
+            <p>
+              Introductory statistical analysis and visualization project using NHL player-performance data.
+            </p>
+            <div class="project-tags">
+              <span>Data analysis</span>
+              <span>Visualization</span>
+              <span>Sports analytics</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>STAT 240</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/Final_project_report.pdf" target="_blank" rel="noopener">Examining the Relationship Between Socioeconomic Factors and HIV Prevalence in the United States</a></h3>
+            <p>
+              Applied econometrics and data analysis project examining associations between socioeconomic variables and HIV prevalence.
+            </p>
+            <div class="project-tags">
+              <span>Applied data analysis</span>
+              <span>Public health</span>
+              <span>Economics</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>ECON 570</span>
+          </aside>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Jiahe Ling</span>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const filterButtons = document.querySelectorAll(".project-filter");
+    const categories = document.querySelectorAll(".project-category");
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filter;
+
+        filterButtons.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        categories.forEach((category) => {
+          let visibleCount = 0;
+
+          category.querySelectorAll(".project-item").forEach((item) => {
+            const tags = item.dataset.tags || "";
+            const show = filter === "all" || tags.includes(filter);
+            item.hidden = !show;
+            if (show) visibleCount += 1;
+          });
+
+          category.hidden = visibleCount === 0;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jiahe Ling</title>
+  <meta name="description" content="Personal webpage of Jiahe Ling." />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-title" href="/">Jiahe Ling</a>
+
+    <nav class="nav" aria-label="Main navigation">
+      <a class="active" href="/">Home</a>
+      <a href="pages/education.html">Education</a>
+      <a href="pages/research.html">Research</a>
+      <a href="pages/projects.html">Projects</a>
+      <a href="pages/photolab.html">PhotoLab</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <aside class="portrait-card" aria-label="Profile photo">
+        <div class="portrait-placeholder">
+          <span>Photo</span>
+        </div>
+        <p class="caption">Replace this with your profile photo.</p>
+      </aside>
+
+      <div class="intro">
+        <p class="eyebrow">Hi there!</p>
+
+        <h1>Welcome to my personal webpage.</h1>
+
+        <div class="bio">
+          <p>
+            [Introduction placeholder] Write 2–4 sentences about who you are,
+            what you study or work on, and what this website is for.
+          </p>
+
+          <p>
+            [Research/interests placeholder] Mention your current interests,
+            research direction, projects, or professional focus.
+          </p>
+
+          <p>
+            [Background placeholder] Add a short note about your education,
+            previous experience, mentors, collaborators, or anything you want
+            visitors to know.
+          </p>
+        </div>
+
+        <section class="news-section" aria-label="Recent news">
+          <h2>News</h2>
+
+          <ul class="news-list">
+            <li>
+              <time datetime="2025-09">Sep 2025</time>
+              <span>
+                New working paper: <em>Comparative Analysis of Global and Local Probabilistic
+                Time Series Forecasting for Contiguous Spatial Demand Regions</em>.
+              </span>
+            </li>
+
+            <li>
+              <time datetime="2025-03">Mar 2025</time>
+              <span>
+                New article accepted in the <em>International Journal of Transportation Science
+                and Technology</em> on electric-vehicle crashes involving vulnerable road users.
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="links" aria-label="Important links">
+          <a class="link-card" href="mailto:jiahe_ling@outlook.com">
+            <span class="link-title">Email</span>
+            <span class="link-desc">jiahe_ling@outlook.com</span>
+          </a>
+
+          <a class="link-card" href="https://github.com/JiaheLing" target="_blank" rel="noopener">
+            <span class="link-title">GitHub</span>
+            <span class="link-desc">@JiaheLing</span>
+          </a>
+
+          <a class="link-card" href="cv.pdf" target="_blank" rel="noopener">
+            <span class="link-title">CV</span>
+            <span class="link-desc">Coming soon</span>
+          </a>
+
+          <a class="link-card" href="https://scholar.google.com/citations?user=jWOJp5sAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener">
+            <span class="link-title">Scholar</span>
+            <span class="link-desc">Publications & citations</span>
+          </a>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Jiahe Ling</span>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
