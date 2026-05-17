@@ -28,7 +28,7 @@
       <article class="project-focus-card">
         <p class="focus-kicker">重点方向</p>
         <h2>交通分析与运筹优化</h2>
-        <p>公共交通系统优化、设施选址、路径规划、供应链优化、仿真模拟</p>
+        <p>设施选址、车辆路径规划、库存管理、调度、排队系统、供应链优化与仿真模拟</p>
       </article>
 
       <article class="project-focus-card">
@@ -40,10 +40,9 @@
       <article class="project-focus-card">
         <p class="focus-kicker">重点方向</p>
         <h2>数据工程与 DBMS</h2>
-        <p>数据库系统、大数据管道、分布式系统、HPC 与分析基础设施。</p>
+        <p>数据库系统、大数据流水线、分布式系统、HPC 与分析基础设施</p>
       </article>
     </section>
-
 
     <section class="project-updates" aria-label="项目动态">
       <h2>动态</h2>
@@ -74,8 +73,8 @@
       </div>
 
       <div class="project-filters" role="group" aria-label="筛选项目">
-        <button class="project-filter active" data-filter="all" type="button">全部 (17)</button>
-        <button class="project-filter" data-filter="transportation" type="button">交通 / OR (4)</button>
+        <button class="project-filter active" data-filter="all" type="button">全部 (23)</button>
+        <button class="project-filter" data-filter="transportation" type="button">交通 / OR (10)</button>
         <button class="project-filter" data-filter="ml" type="button">机器学习 (5)</button>
         <button class="project-filter" data-filter="systems" type="button">数据工程 / DBMS (3)</button>
         <button class="project-filter" data-filter="industry" type="button">行业项目 (1)</button>
@@ -90,14 +89,14 @@
             <p class="section-kicker">交通 / OR</p>
             <h2>交通分析与运筹优化</h2>
           </div>
-          <span>4 个项目</span>
+          <span>10 个项目</span>
         </div>
 
         <article class="project-item" data-tags="transportation industry">
           <div class="project-main">
             <h3>多场景公交调度与实时路径规划引擎</h3>
             <p>
-              设计并实现了一个支持固定线路、动态拼车与融合运营模式的公交调度引擎，用于提升车队利用率并缩短乘客出行时间。项目中构建并求解实时路径规划模型，包括用于动态巡游的开放式集送一体化TSP，以及用于分段式线路偏离的固定端点 TSPP。
+              设计并实现支持固定线路、动态拼车与融合运营模式的公交调度引擎，旨在提升车队利用率并缩短乘客出行时间。核心工作包括构建并求解实时路径规划模型——涵盖用于动态巡游的开放式集送一体化 TSP (PDP-TSP)，以及用于分段式线路偏移的固定端点 TSPP。
             </p>
             <div class="project-tags">
               <span>公交调度</span>
@@ -115,12 +114,11 @@
           <div class="project-main">
             <h3>
               <a href="../projects/ColumbiaShuttle.pdf" target="_blank" rel="noopener">
-                共享出行车队规模估计的混合方法：结合 M/M/s 排队模型与 ABM 仿真（Columbia University Evening Shuttle）
+                共享出行车队规模估计的混合方法：结合 M/M/s 排队模型与 ABM 仿真（Columbia Evening Shuttle）
               </a>
             </h3>
             <p>
-              围绕 Columbia Evening Shuttle 开展混合式车队规模估计研究，结合解析的 M/M/s 排队模型基准
-              与ABM仿真，分析不同调度策略下的乘客等待时间、车辆行驶距离与司机利用率。
+              围绕 Columbia Evening Shuttle 开展基于混合方法的车队规模估计研究。将解析式 M/M/s 排队模型基准与基于智能体 (ABM) 的仿真相结合，深入分析不同调度策略对乘客等待时间、车辆行驶距离及司机利用率的综合影响。
             </p>
             <div class="project-tags">
               <span>车队规模估计</span>
@@ -137,9 +135,9 @@
 
         <article class="project-item" data-tags="transportation">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/cs-project/jling9_hzhang784_report.pdf" target="_blank" rel="noopener">Chicago Divvy 共享单车供给与站点管理</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/cs-project/jling9_hzhang784_report.pdf" target="_blank" rel="noopener">Chicago Divvy 共享单车网络供给与站点运营优化</a></h3>
             <p>
-              针对 Chicago Divvy 共享单车网络，建立混合整数规划模型，用于单车供给、站点选择以及考虑价格因素的站点管理。
+              针对芝加哥 Divvy 共享单车网络构建混合整数规划 (MIP) 模型，以科学优化单车投放量、站点选址部署及基于价格动态考量的站点运营管理策略。
             </p>
             <div class="project-tags">
               <span>设施选址</span>
@@ -156,9 +154,9 @@
 
         <article class="project-item" data-tags="transportation">
           <div class="project-main">
-            <h3><a href="../projects/ChildCare.pdf" target="_blank" rel="noopener">解决纽约市托儿服务短缺问题：预算最小化的选址与扩容模型</a></h3>
+            <h3><a href="../projects/ChildCare.pdf" target="_blank" rel="noopener">解决纽约市托育服务短缺：预算最小化的选址部署与扩容模型</a></h3>
             <p>
-              构建了一个混合整数规划模型，用于在邮编级别覆盖率、特定年龄容量和距离分隔约束条件下决定新建托育设施的位置以及现有容量的扩展方式。
+              构建混合整数规划模型以消除纽约市“托儿沙漠”现象。在兼顾邮编级服务覆盖率、特定年龄段容量及设施间距限制的约束下，优化新建托育设施的选址部署与现有机构的容量扩充策略，实现预算成本最小化。
             </p>
             <div class="project-tags">
               <span>设施选址</span>
@@ -172,6 +170,115 @@
             <span>IEOR 4004</span>
           </aside>
         </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3>航空餐食单期库存优化</h3>
+            <p>
+              为纽约飞往伦敦的跨大西洋航班制定航空餐食每日最优订购策略。在面临乘客需求高度不确定的前提下，通过动态规划综合权衡易腐生鲜食材、可复用零食包、缺货补偿券、固定订购成本、库存持有成本及机舱空间容量限制等复杂因素。
+            </p>
+            <div class="project-tags">
+              <span>单期库存模型</span>
+              <span>库存控制</span>
+              <span>易腐库存</span>
+              <span>动态规划</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>哥伦比亚大学</span>
+            <span>IEOR 4108</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3>纽约市末端配送移动挂车枢纽选址与需求分配</h3>
+            <p>
+              构建基于每周动态更新的末端配送优化模型，用于纽约市半挂车移动枢纽的选址部署与社区级需求分配。在综合考量配送成本的不确定性与运力短缺惩罚的约束下，实现挂车运力容量的精细化管理。
+            </p>
+            <div class="project-tags">
+              <span>有容量设施选址</span>
+              <span>末端物流</span>
+              <span>随机需求</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>哥伦比亚大学</span>
+            <span>IEOR 4108</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3>跨港口油轮船队路径规划与装载决策优化</h3>
+            <p>
+              为服务多港口的油轮船队制定季度航线规划与装载策略。该项目将车辆路径规划 (VRP) 与动态装载决策深度结合，在应对随机航行时间、港口需求不确定性及国际油价波动的复杂环境中实现船队整体收益最大化。
+            </p>
+            <div class="project-tags">
+              <span>车辆路径规划</span>
+              <span>装载规划</span>
+              <span>随机旅行时间</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>哥伦比亚大学</span>
+            <span>IEOR 4108</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3>不确定环境下的 24/7 仓库人员排班</h3>
+            <p>
+              为 24/7 全天候运营的 GPU 翻新仓库设计日前人员排班规划模型。通过样本平均近似 (SAA) 等方法，在零工出勤率随机波动、生产效率不确定、基础人力成本及高昂的溢出补位成本之间实现最优的风险与成本权衡。
+            </p>
+            <div class="project-tags">
+              <span>随机排班</span>
+              <span>人员规划</span>
+              <span>样本平均近似 (SAA)</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>哥伦比亚大学</span>
+            <span>IEOR 4108</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3>大语言模型 (LLM) 推理数据中心服务器动态调度</h3>
+            <p>
+              为 LLM 推理数据中心设计基于排队论的服务器动态启停调度策略。在面对请求随机到达与排队系统动态特征时，实现电力能源成本、系统内存开销与 SLA 违约惩罚/网络拥塞损失之间的有效平衡。
+            </p>
+            <div class="project-tags">
+              <span>排队系统</span>
+              <span>动态容量控制</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>哥伦比亚大学</span>
+            <span>IEOR 4108</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3>多级饮料供应链网络生产规划</h3>
+            <p>
+              为涵盖生产、转售与终端零售节点的多级饮料供应链网络构建生产规划模型。该模型结合报童模型 (Newsvendor Model) 的利润最大化函数、节点产能限制、设施间需求传导效应及外部随机需求，科学制定网络全局最优月度生产计划。
+            </p>
+            <div class="project-tags">
+              <span>多级网络</span>
+              <span>生产规划</span>
+              <span>报童模型</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>哥伦比亚大学</span>
+            <span>IEOR 4108</span>
+          </aside>
+        </article>
+
       </section>
 
       <section class="project-category" data-category="ml">
@@ -185,9 +292,9 @@
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="../projects/Diffusion.pdf" target="_blank" rel="noopener">基于时间步条件的 U-Net 的 MNIST 扩散模型</a></h3>
+            <h3><a href="../projects/Diffusion.pdf" target="_blank" rel="noopener">基于时间步条件的 U-Net MNIST 图像扩散模型</a></h3>
             <p>
-              实现并研究了用于图像生成的去噪扩散模型与基于时间步条件的U-Net 架构。
+              独立实现并深入研究了用于高质量图像生成的去噪扩散模型 (Denoising Diffusion Models) 及基于时间步条件的 U-Net (Time-conditioned U-Net) 核心架构。
             </p>
             <div class="project-tags">
               <span>扩散模型</span>
@@ -203,9 +310,9 @@
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="https://github.com/aschein/stat_348_2025/tree/main/assignments" target="_blank" rel="noopener">概率机器学习与变分推断实现</a></h3>
+            <h3><a href="https://github.com/aschein/stat_348_2025/tree/main/assignments" target="_blank" rel="noopener">概率机器学习与变分推断算法全集实现</a></h3>
             <p>
-              使用 Python 实现了一组概率机器学习与推断模型，包括贝叶斯线性回归、隐马尔可夫模型、吉布斯采样、期望最大化（EM）算法、坐标上升变分推断、变分自编码器、基于平均场变分推断的泊松矩阵分解、变量消除以及前向-后向推断。
+              使用 Python 从零构建了一系列概率机器学习与统计推断算法，核心涵盖：贝叶斯线性回归、隐马尔可夫模型 (HMM)、吉布斯采样、期望最大化 (EM) 算法、坐标上升变分推断 (CAVI)、变分自编码器 (VAE)、基于平均场变分推断的泊松矩阵分解、变量消除以及前向-后向推断。
             </p>
             <div class="project-tags">
               <span>贝叶斯推断</span>
@@ -221,14 +328,14 @@
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="https://sites.google.com/wisc.edu/639project/" target="_blank" rel="noopener">制造产品质量检测中的计算机视觉</a></h3>
+            <h3><a href="https://sites.google.com/wisc.edu/639project/" target="_blank" rel="noopener">基于计算机视觉的制造业产品质量缺陷检测</a></h3>
             <p>
-              将计算机视觉方法应用于制造产品质量检测，结合纹理特征、CNN 与模型解释方法。
+              将先进的计算机视觉技术应用于工业制造流水线的产品质量检测。该项目综合运用了图像纹理特征提取、深度卷积神经网络 (CNN) 及模型可解释性分析方法 (如 SHAP)，以显著提升表面缺陷识别的准确率与模型透明度。
             </p>
             <div class="project-tags">
               <span>计算机视觉</span>
               <span>CNN</span>
-              <span>SHAP</span>
+              <span>SHAP (可解释性分析)</span>
             </div>
           </div>
           <aside class="project-side">
@@ -239,14 +346,14 @@
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="https://engrxiv.org/preprint/view/3139/version/4428" target="_blank" rel="noopener">在线 Twitter Bot 检测</a></h3>
+            <h3><a href="https://engrxiv.org/preprint/view/3139/version/4428" target="_blank" rel="noopener">在线 Twitter 机器人账号自动识别与检测</a></h3>
             <p>
-              使用神经网络与基于 Transformer 的建模方法识别自动化社交媒体账号的 NLP 项目。
+              这是一个极具现实意义的自然语言处理 (NLP) 实践项目，通过构建深度神经网络架构与基于 Transformer 的前沿语言建模技术，精准检测并拦截社交媒体平台上的自动化灌水及恶意机器账号。
             </p>
             <div class="project-tags">
               <span>NLP</span>
               <span>Transformer</span>
-              <span>分类</span>
+              <span>文本分类</span>
             </div>
           </div>
           <aside class="project-side">
@@ -257,14 +364,14 @@
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/451Report.Group7.pdf" target="_blank" rel="noopener">银行卡欺诈交易检测探索</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/451Report.Group7.pdf" target="_blank" rel="noopener">信用卡欺诈交易检测系统建模探索</a></h3>
             <p>
-              将监督学习方法应用于银行卡欺诈交易检测，包括决策树、K-近邻（KNN）、逻辑回归及相关分类器。
+              将机器学习中的监督学习算法引入信用卡欺诈交易的风控检测体系，全面评估并横向对比了决策树、K-近邻 (KNN)、逻辑回归等主流分类器在海量非平衡数据下的异常识别性能。
             </p>
             <div class="project-tags">
               <span>监督学习</span>
-              <span>欺诈检测</span>
-              <span>分类</span>
+              <span>异常与欺诈检测</span>
+              <span>分类器</span>
             </div>
           </div>
           <aside class="project-side">
@@ -285,13 +392,13 @@
 
         <article class="project-item" data-tags="systems">
           <div class="project-main">
-            <h3><a href="https://github.com/cs544-wisc/f23/tree/main" target="_blank" rel="noopener">大数据系统导论</a></h3>
+            <h3><a href="https://github.com/cs544-wisc/f23/tree/main" target="_blank" rel="noopener">现代大数据基础设施与系统构建</a></h3>
             <p>
-              使用 PyArrow、Docker、HDFS、Spark、HBase、Cassandra 与 Kafka Streams 构建数据系统项目。
+              综合运用 PyArrow、Docker 容器化、HDFS、Apache Spark 分布式计算框架、HBase、Cassandra 分布式存储系统及 Kafka Streams，端到端构建具备高容错与可扩展性的流批一体化现代数据工程流水线。
             </p>
             <div class="project-tags">
               <span>PyArrow</span>
-              <span>Spark</span>
+              <span>Apache Spark</span>
               <span>Kafka Streams</span>
               <span>Cassandra</span>
             </div>
@@ -304,15 +411,15 @@
 
         <article class="project-item" data-tags="systems">
           <div class="project-main">
-            <h3><a href="https://github.com/uwmadison-cs564" target="_blank" rel="noopener">数据库管理系统（DBMS）：设计与实现</a></h3>
+            <h3><a href="https://github.com/uwmadison-cs564" target="_blank" rel="noopener">数据库管理系统 (DBMS)：架构设计与底层实现</a></h3>
             <p>
-              完成 SQL query projects，并用 C++ 实现数据库系统内部的核心组件，包括缓冲池管理与连接算法。
+              深入研习复杂 SQL 查询执行计划与优化策略，并使用 C++ 从底层手工实现关系型数据库管理系统 (RDBMS) 的核心内部机制，重点覆盖缓冲池管理器 (Buffer Management) 调度逻辑与各类物理连接算法 (Join Algorithms)。
             </p>
             <div class="project-tags">
               <span>SQL</span>
               <span>C++</span>
               <span>缓冲池管理</span>
-              <span>连接算法</span>
+              <span>物理连接算法</span>
             </div>
           </div>
           <aside class="project-side">
@@ -323,14 +430,14 @@
 
         <article class="project-item" data-tags="systems">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/report-1.html" target="_blank" rel="noopener">AdTracking 欺诈检测</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/report-1.html" target="_blank" rel="noopener">基于 HPC 集群的移动广告点击欺诈分析 (AdTracking)</a></h3>
             <p>
-              这是一个高性能分析项目，使用威斯康星大学麦迪逊分校基于 HTCondor 的 HPC 环境进行大规模数据处理与模型实验。
+              这是一个面向高性能计算 (HPC) 场景的数字广告追踪反欺诈项目。依托威斯康星大学麦迪逊分校基于 HTCondor 构建的分布式集群计算环境，高效完成极大规模行为日志数据的并行预处理、特征工程与分布式模型训练实验。
             </p>
             <div class="project-tags">
               <span>HPC</span>
               <span>HTCondor</span>
-              <span>欺诈检测</span>
+              <span>广告欺诈检测</span>
             </div>
           </div>
           <aside class="project-side">
@@ -351,20 +458,20 @@
 
         <article class="project-item" data-tags="other">
           <div class="project-main">
-            <h3><a href="../projects/ClimateDemographics.pdf" target="_blank" rel="noopener">气候—人口交互与建成环境的时空可视化工具</a></h3>
+            <h3><a href="../projects/ClimateDemographics.pdf" target="_blank" rel="noopener">气候—人口演变交互与建成环境的多维时空可视化系统</a></h3>
             <p>
-              构建了一个地理空间可视化工具，将气候预测、人口、土地利用、住房密度与城市边界联系起来，并覆盖长时间跨度的RCP 4.5 / RCP 8.5两种场景。
+              自主规划并开发了一款交互式多维地理空间数据可视化平台，动态关联气候极端预测、人口演变趋势、土地利用状况、住房密度及城市边界扩张路径。该工具支持用户沉浸式对比 RCP 4.5 与 RCP 8.5 两种典型温室气体排放情景下，长达数十年的时空演化分析。
             </p>
             <p class="demo-link">
               <a href="https://692bdc55a6e76bc40e28861b--luminous-chebakia-6ee4f3.netlify.app/sample"
                 target="_blank" rel="noopener">
                 产品展示 →
               </a>
-              <span class="caption">基于纽约州数据渲染的示例面板</span>
+              <span class="caption">基于纽约州数据渲染的交互演示面板</span>
             </p>
             <div class="project-tags">
               <span>地理空间可视化</span>
-              <span>气候分析</span>
+              <span>气候分析与建模</span>
               <span>栅格数据处理</span>
               <span>建成环境</span>
             </div>
@@ -377,14 +484,14 @@
 
         <article class="project-item" data-tags="other">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat424.pdf" target="_blank" rel="noopener">统计实验设计与分析</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat424.pdf" target="_blank" rel="noopener">基于 ANOVA 的科学实验设计与统计解析</a></h3>
             <p>
-              使用 ANOVA 与 Fisher's LSD完成的实验设计与统计分析项目。
+              运用方差分析 (ANOVA) 与 Fisher 最小显著性差异法 (LSD) 等严谨的数理统计框架，主导完成的结构化实验设计 (DOE) 与控制变量数据解析实践项目。
             </p>
             <div class="project-tags">
-              <span>ANOVA</span>
+              <span>方差分析 (ANOVA)</span>
               <span>Fisher LSD</span>
-              <span>实验设计</span>
+              <span>实验设计 (DOE)</span>
             </div>
           </div>
           <aside class="project-side">
@@ -395,17 +502,17 @@
 
         <article class="project-item" data-tags="other">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/FinalPaper_Group9.pdf" target="_blank" rel="noopener">解读利润率悖论：美国肉类加工行业市场集中度与经济动态分析</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/FinalPaper_Group9.pdf" target="_blank" rel="noopener">透视“利润率悖论”：美国肉类加工业市场集中度与微观经济动态分析</a></h3>
             <p>
-              对美国肉类加工行业中市场集中度与利润率关系的经济分析。
+              深度聚焦美国传统肉类加工行业，运用微观经济学原理与计量模型，深入剖析头部寡头市场集中度不断攀升与行业平均利润率波动之间违背常规直觉的深层经济学“悖论”规律。
             </p>
             <p class="demo-link">
-              <a href="https://pages.cs.wisc.edu/~sling/econ-project/Presentation_Group9.pdf" target="_blank" rel="noopener">PPT →</a>
+              <a href="https://pages.cs.wisc.edu/~sling/econ-project/Presentation_Group9.pdf" target="_blank" rel="noopener">演示文稿 (PPT) →</a>
             </p>
             <div class="project-tags">
-              <span>产业组织</span>
+              <span>产业组织经济学</span>
               <span>市场集中度</span>
-              <span>经济学</span>
+              <span>微观经济学</span>
             </div>
           </div>
           <aside class="project-side">
@@ -416,14 +523,14 @@
 
         <article class="project-item" data-tags="other">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/Final_project_report.pdf" target="_blank" rel="noopener">美国社会经济因素与 HIV 患病率关系研究</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/Final_project_report.pdf" target="_blank" rel="noopener">美国社会经济变量与地方 HIV 流行病发病率关联机制研究</a></h3>
             <p>
-              这是一个应用计量经济学与数据分析项目，用于考察社会经济变量与 HIV 患病率之间的关系。
+              这是一个交叉学科的应用计量经济学与公共卫生数据分析项目。旨在通过多重回归与假设检验，科学量化并全面考察多项宏观及微观社会经济学核心变量对美国境内 HIV 地方发病率的潜在驱动作用机制。
             </p>
             <div class="project-tags">
               <span>应用数据分析</span>
-              <span>公共卫生</span>
-              <span>经济学</span>
+              <span>公共卫生计量</span>
+              <span>计量经济学</span>
             </div>
           </div>
           <aside class="project-side">
@@ -434,14 +541,14 @@
 
         <article class="project-item" data-tags="other">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat240.html" target="_blank" rel="noopener">NHL 球员统计数据分析</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat240.html" target="_blank" rel="noopener">北美职业冰球联赛 (NHL) 球员表现统计指标多维图解</a></h3>
             <p>
-              使用 NHL 球员表现数据完成的入门级统计分析与可视化项目。
+              基于北美职业冰球联赛 (NHL) 现役及历史球员的关键赛场表现数据集，运用现代 R/Python 数据科学工具包独立完成的探索性数据分析 (EDA) 与交互式信息图表可视化展示项目。
             </p>
             <div class="project-tags">
-              <span>数据分析</span>
-              <span>可视化</span>
-              <span>体育数据分析</span>
+              <span>探索性数据分析 (EDA)</span>
+              <span>信息可视化</span>
+              <span>体育商业数据分析</span>
             </div>
           </div>
           <aside class="project-side">
