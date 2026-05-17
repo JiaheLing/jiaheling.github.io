@@ -27,20 +27,20 @@
     <section class="project-focus-grid" aria-label="重点方向">
       <article class="project-focus-card">
         <p class="focus-kicker">重点方向</p>
-        <h2>Transportation Analytics &amp; Operations Research</h2>
-        <p>关注 transit systems、fleet operations、routing、scheduling、facility location 与 optimization models。</p>
+        <h2>交通分析与运筹优化</h2>
+        <p>公共交通系统、车队运营、路径规划、调度、设施选址与优化建模。</p>
       </article>
 
       <article class="project-focus-card">
         <p class="focus-kicker">重点方向</p>
-        <h2>Machine Learning &amp; Statistical Modeling</h2>
-        <p>关注 generative models、Bayesian inference、computer vision、NLP、supervised learning 与 model evaluation。</p>
+        <h2>机器学习与统计建模</h2>
+        <p>生成模型、贝叶斯推断、计算机视觉、自然语言处理、监督学习与模型评估。</p>
       </article>
 
       <article class="project-focus-card">
         <p class="focus-kicker">重点方向</p>
-        <h2>Data Engineering &amp; DBMS</h2>
-        <p>关注 database systems、big data pipelines、distributed systems、HPC 与 analytics infrastructure。</p>
+        <h2>数据工程与 DBMS</h2>
+        <p>数据库系统、大数据管道、分布式系统、HPC 与分析基础设施。</p>
       </article>
     </section>
 
@@ -59,7 +59,7 @@
         <li>
           <time>2026 年 4 月</time>
           <span>
-            正在推进 <em>Multi-Scenario Bus Dispatching and Real-Time Routing Engine</em>。
+            正在推进 <em>多场景公交调度与实时路径规划引擎</em>。
           </span>
         </li>
       </ul>
@@ -75,9 +75,9 @@
 
       <div class="project-filters" role="group" aria-label="筛选项目">
         <button class="project-filter active" data-filter="all" type="button">全部 (17)</button>
-        <button class="project-filter" data-filter="transportation" type="button">Transportation / OR (4)</button>
-        <button class="project-filter" data-filter="ml" type="button">Machine Learning (5)</button>
-        <button class="project-filter" data-filter="systems" type="button">Data Engineering / DBMS (3)</button>
+        <button class="project-filter" data-filter="transportation" type="button">交通 / OR (4)</button>
+        <button class="project-filter" data-filter="ml" type="button">机器学习 (5)</button>
+        <button class="project-filter" data-filter="systems" type="button">数据工程 / DBMS (3)</button>
         <button class="project-filter" data-filter="industry" type="button">行业项目 (1)</button>
         <button class="project-filter" data-filter="other" type="button">其他 (5)</button>
       </div>
@@ -87,23 +87,21 @@
       <section class="project-category" data-category="transportation">
         <div class="project-category-heading">
           <div>
-            <p class="section-kicker">Transportation / OR</p>
-            <h2>Transportation Analytics &amp; Operations Research</h2>
+            <p class="section-kicker">交通 / OR</p>
+            <h2>交通分析与运筹优化</h2>
           </div>
-          <span>4 projects</span>
+          <span>4 个项目</span>
         </div>
 
         <article class="project-item" data-tags="transportation industry">
           <div class="project-main">
-            <h3>Multi-Scenario Bus Dispatching and Real-Time Routing Engine</h3>
+            <h3>多场景公交调度与实时路径规划引擎</h3>
             <p>
-              设计并实现了一个支持 fixed-route、dynamic ride-pooling 与 fusion 模式的 bus dispatching engine，用于提升
-              fleet utilization 并缩短 passenger journey times。项目中构建并求解实时 routing models，包括用于
-              dynamic cruising 的 open pickup-and-delivery TSP，以及用于 segment-based route deviations 的 fixed-endpoint TSPP。
+              设计并实现了一个支持固定线路、动态拼车与融合运营模式的公交调度引擎，用于提升车队利用率并缩短乘客出行时间。项目中构建并求解实时路径规划模型，包括用于动态巡游的开放式集送一体化TSP，以及用于分段式线路偏离的固定端点 TSPP。
             </p>
             <div class="project-tags">
-              <span>Bus dispatching</span>
-              <span>Dynamic routing</span>
+              <span>公交调度</span>
+              <span>动态路径规划</span>
               <span>PDP-TSP</span>
               <span>TSPP</span>
             </div>
@@ -117,19 +115,18 @@
           <div class="project-main">
             <h3>
               <a href="../projects/ColumbiaShuttle.pdf" target="_blank" rel="noopener">
-                A Hybrid Approach to Rideshare Fleet Sizing: Integrating M/M/s Queueing Models with Agent-Based Simulation (Columbia University Evening Shuttle)
+                共享出行车队规模估计的混合方法：结合 M/M/s 排队模型与 ABM 仿真（Columbia University Evening Shuttle）
               </a>
             </h3>
             <p>
-              围绕 Columbia Evening Shuttle 的 hybrid fleet-sizing 项目，结合 analytical M/M/s queueing benchmark
-              与 agent-based simulation，评估不同运营配置下的 driver staffing、wait time、time in system
-              与 driver utilization。
+              围绕 Columbia Evening Shuttle 开展混合式车队规模估计研究，结合解析的 M/M/s 排队模型基准
+              与ABM仿真，分析不同调度策略下的乘客等待时间、车辆行驶距离与司机利用率。
             </p>
             <div class="project-tags">
-              <span>Fleet sizing</span>
-              <span>M/M/s queueing</span>
-              <span>Agent-based simulation</span>
-              <span>Open PDP-TSP</span>
+              <span>车队规模估计</span>
+              <span>M/M/s 排队模型</span>
+              <span>ABM 仿真</span>
+              <span>开放式 PDP-TSP</span>
             </div>
           </div>
           <aside class="project-side">
@@ -140,16 +137,15 @@
 
         <article class="project-item" data-tags="transportation">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/cs-project/jling9_hzhang784_report.pdf" target="_blank" rel="noopener">Chicago Divvy Bike Supply &amp; Station Management</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/cs-project/jling9_hzhang784_report.pdf" target="_blank" rel="noopener">Chicago Divvy 共享单车供给与站点管理</a></h3>
             <p>
-              针对 Chicago Divvy bike-share network，建立 integer 与 mixed-integer optimization models，用于 bike supply、
-              station selection 以及 pricing-aware station management。
+              针对 Chicago Divvy 共享单车网络，建立混合整数规划模型，用于单车供给、站点选择以及考虑价格因素的站点管理。
             </p>
             <div class="project-tags">
-              <span>Facility location</span>
-              <span>Bike positioning</span>
+              <span>设施选址</span>
+              <span>单车调配</span>
               <span>IP/MIP</span>
-              <span>Pricing optimization</span>
+              <span>定价优化</span>
             </div>
           </div>
           <aside class="project-side">
@@ -160,16 +156,15 @@
 
         <article class="project-item" data-tags="transportation">
           <div class="project-main">
-            <h3><a href="../projects/ChildCare.pdf" target="_blank" rel="noopener">Eliminating Child Care Deserts in New York State: A Budget-Minimizing Siting and Expansion Model</a></h3>
+            <h3><a href="../projects/ChildCare.pdf" target="_blank" rel="noopener">解决纽约市托儿服务短缺问题：预算最小化的选址与扩容模型</a></h3>
             <p>
-              构建了一个 integer optimization framework，用于在 ZIP-level coverage、age-specific capacity 和 distance
-              separation constraints 下决定新建 child-care facilities 的位置以及现有容量的扩展方式。
+              构建了一个混合整数规划模型，用于在邮编级别覆盖率、特定年龄容量和距离分隔约束条件下决定新建托育设施的位置以及现有容量的扩展方式。
             </p>
             <div class="project-tags">
-              <span>Facility location</span>
-              <span>Capacity expansion</span>
+              <span>设施选址</span>
+              <span>容量扩展</span>
               <span>MIP</span>
-              <span>Public-service access planning</span>
+              <span>公共服务可达性规划</span>
             </div>
           </div>
           <aside class="project-side">
@@ -182,58 +177,56 @@
       <section class="project-category" data-category="ml">
         <div class="project-category-heading">
           <div>
-            <p class="section-kicker">Machine Learning</p>
-            <h2>Machine Learning &amp; Statistical Modeling</h2>
+            <p class="section-kicker">机器学习</p>
+            <h2>机器学习与统计建模</h2>
           </div>
-          <span>5 projects</span>
+          <span>5 个项目</span>
         </div>
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="../projects/Diffusion.pdf" target="_blank" rel="noopener">Diffusion Models with a Time-Conditioned U-Net on MNIST</a></h3>
+            <h3><a href="../projects/Diffusion.pdf" target="_blank" rel="noopener">基于时间步条件的 U-Net 的 MNIST 扩散模型</a></h3>
             <p>
-              实现并研究了用于图像生成的 denoising diffusion models 与 time-conditioned U-Net architecture。
+              实现并研究了用于图像生成的去噪扩散模型与基于时间步条件的U-Net 架构。
             </p>
             <div class="project-tags">
-              <span>Diffusion models</span>
+              <span>扩散模型</span>
               <span>U-Net</span>
-              <span>Generative ML</span>
+              <span>生成式机器学习</span>
             </div>
           </div>
           <aside class="project-side">
-            <span>University of Chicago</span>
+            <span>芝加哥大学</span>
             <span>STAT 37601</span>
           </aside>
         </article>
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="https://github.com/aschein/stat_348_2025/tree/main/assignments" target="_blank" rel="noopener">Probabilistic Machine Learning and Variational Inference Implementations</a></h3>
+            <h3><a href="https://github.com/aschein/stat_348_2025/tree/main/assignments" target="_blank" rel="noopener">概率机器学习与变分推断实现</a></h3>
             <p>
-              使用 Python 实现了一组 probabilistic machine learning 与 inference 模型，包括 Bayesian linear regression、
-              hidden Markov models、Gibbs sampling、EM、coordinate-ascent variational inference、variational autoencoders、
-              Poisson matrix factorization with mean-field variational inference、variable elimination 与 forward-backward inference。
+              使用 Python 实现了一组概率机器学习与推断模型，包括贝叶斯线性回归、隐马尔可夫模型、吉布斯采样、期望最大化（EM）算法、坐标上升变分推断、变分自编码器、基于平均场变分推断的泊松矩阵分解、变量消除以及前向-后向推断。
             </p>
             <div class="project-tags">
-              <span>Bayesian inference</span>
-              <span>Latent-variable models</span>
-              <span>Variational inference</span>
+              <span>贝叶斯推断</span>
+              <span>潜变量模型</span>
+              <span>变分推断</span>
             </div>
           </div>
           <aside class="project-side">
-            <span>University of Chicago</span>
+            <span>芝加哥大学</span>
             <span>STAT 34800</span>
           </aside>
         </article>
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="https://sites.google.com/wisc.edu/639project/" target="_blank" rel="noopener">Computer Vision for Quality Inspection of Manufacturing Product</a></h3>
+            <h3><a href="https://sites.google.com/wisc.edu/639project/" target="_blank" rel="noopener">制造产品质量检测中的计算机视觉</a></h3>
             <p>
-              将 computer vision 方法应用于 manufacturing quality inspection，结合 texture features、CNN 与 model interpretation。
+              将计算机视觉方法应用于制造产品质量检测，结合纹理特征、CNN 与模型解释方法。
             </p>
             <div class="project-tags">
-              <span>Computer vision</span>
+              <span>计算机视觉</span>
               <span>CNN</span>
               <span>SHAP</span>
             </div>
@@ -246,14 +239,14 @@
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="https://engrxiv.org/preprint/view/3139/version/4428" target="_blank" rel="noopener">Online Twitter Bot Detection</a></h3>
+            <h3><a href="https://engrxiv.org/preprint/view/3139/version/4428" target="_blank" rel="noopener">在线 Twitter Bot 检测</a></h3>
             <p>
-              使用 neural networks 与 transformer-based modeling 识别自动化社交媒体账号的 NLP 项目。
+              使用神经网络与基于 Transformer 的建模方法识别自动化社交媒体账号的 NLP 项目。
             </p>
             <div class="project-tags">
               <span>NLP</span>
-              <span>Transformers</span>
-              <span>Classification</span>
+              <span>Transformer</span>
+              <span>分类</span>
             </div>
           </div>
           <aside class="project-side">
@@ -264,15 +257,14 @@
 
         <article class="project-item" data-tags="ml">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/451Report.Group7.pdf" target="_blank" rel="noopener">Exploring Card Fraud Transaction</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/451Report.Group7.pdf" target="_blank" rel="noopener">银行卡欺诈交易检测探索</a></h3>
             <p>
-              将 supervised learning 方法应用于 card-fraud transaction detection，包括 decision trees、k-nearest neighbors、
-              logistic regression 及相关 classifiers。
+              将监督学习方法应用于银行卡欺诈交易检测，包括决策树、K-近邻（KNN）、逻辑回归及相关分类器。
             </p>
             <div class="project-tags">
-              <span>Supervised learning</span>
-              <span>Fraud detection</span>
-              <span>Classification</span>
+              <span>监督学习</span>
+              <span>欺诈检测</span>
+              <span>分类</span>
             </div>
           </div>
           <aside class="project-side">
@@ -285,17 +277,17 @@
       <section class="project-category" data-category="systems">
         <div class="project-category-heading">
           <div>
-            <p class="section-kicker">Systems / Data Engineering</p>
-            <h2>Data Engineering &amp; DBMS</h2>
+            <p class="section-kicker">系统 / 数据工程</p>
+            <h2>数据工程与 DBMS</h2>
           </div>
-          <span>3 projects</span>
+          <span>3 个项目</span>
         </div>
 
         <article class="project-item" data-tags="systems">
           <div class="project-main">
-            <h3><a href="https://github.com/cs544-wisc/f23/tree/main" target="_blank" rel="noopener">Introduction to Big Data Systems</a></h3>
+            <h3><a href="https://github.com/cs544-wisc/f23/tree/main" target="_blank" rel="noopener">大数据系统导论</a></h3>
             <p>
-              使用 PyArrow、Docker、HDFS、Spark、HBase、Cassandra 与 Kafka Streams 构建 data-system projects。
+              使用 PyArrow、Docker、HDFS、Spark、HBase、Cassandra 与 Kafka Streams 构建数据系统项目。
             </p>
             <div class="project-tags">
               <span>PyArrow</span>
@@ -312,15 +304,15 @@
 
         <article class="project-item" data-tags="systems">
           <div class="project-main">
-            <h3><a href="https://github.com/uwmadison-cs564" target="_blank" rel="noopener">Database Management Systems (DBMS): Design and Implementation</a></h3>
+            <h3><a href="https://github.com/uwmadison-cs564" target="_blank" rel="noopener">数据库管理系统（DBMS）：设计与实现</a></h3>
             <p>
-              完成 SQL query projects，并用 C++ 实现 database internals 中的核心组件，包括 buffer management 和 join algorithms。
+              完成 SQL query projects，并用 C++ 实现数据库系统内部的核心组件，包括缓冲池管理与连接算法。
             </p>
             <div class="project-tags">
               <span>SQL</span>
               <span>C++</span>
-              <span>Buffer manager</span>
-              <span>Join algorithms</span>
+              <span>缓冲池管理</span>
+              <span>连接算法</span>
             </div>
           </div>
           <aside class="project-side">
@@ -331,14 +323,14 @@
 
         <article class="project-item" data-tags="systems">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/report-1.html" target="_blank" rel="noopener">AdTracking Fraud Detection</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/report-1.html" target="_blank" rel="noopener">AdTracking 欺诈检测</a></h3>
             <p>
-              一个 high-performance analytics 项目，使用 UW-Madison 基于 HTCondor 的 HPC 环境进行大规模数据处理与模型实验。
+              这是一个高性能分析项目，使用 UW-Madison 基于 HTCondor 的 HPC 环境进行大规模数据处理与模型实验。
             </p>
             <div class="project-tags">
               <span>HPC</span>
               <span>HTCondor</span>
-              <span>Fraud detection</span>
+              <span>欺诈检测</span>
             </div>
           </div>
           <aside class="project-side">
@@ -352,30 +344,29 @@
         <div class="project-category-heading">
           <div>
             <p class="section-kicker">其他</p>
-            <h2>Applied Data Analysis, Visualization &amp; Economics</h2>
+            <h2>应用数据分析、可视化与经济学</h2>
           </div>
-          <span>5 projects</span>
+          <span>5 个项目</span>
         </div>
 
         <article class="project-item" data-tags="other">
           <div class="project-main">
-            <h3><a href="../projects/ClimateDemographics.pdf" target="_blank" rel="noopener">A Spatial Temporal Visualization Tool of Climate-Demographic Interactions and Built Environments</a></h3>
+            <h3><a href="../projects/ClimateDemographics.pdf" target="_blank" rel="noopener">气候—人口交互与建成环境的时空可视化工具</a></h3>
             <p>
-              Built a geospatial visualization tool connecting climate projections, population,
-              land use, housing density, and city boundaries across long-horizon RCP 4.5 / RCP 8.5 scenarios.
+              构建了一个地理空间可视化工具，将气候预测、人口、土地利用、住房密度与城市边界联系起来，并覆盖长时间跨度的RCP 4.5 / RCP 8.5两种场景。
             </p>
             <p class="demo-link">
               <a href="https://692bdc55a6e76bc40e28861b--luminous-chebakia-6ee4f3.netlify.app/sample"
                 target="_blank" rel="noopener">
-                Interactive prototype →
+                产品展示 →
               </a>
-              <span class="caption">A sample panel rendered on New York State data.</span>
+              <span class="caption">基于纽约州数据渲染的示例面板</span>
             </p>
             <div class="project-tags">
-              <span>Geospatial visualization</span>
-              <span>Climate analytics</span>
-              <span>Raster processing</span>
-              <span>Built environment</span>
+              <span>地理空间可视化</span>
+              <span>气候分析</span>
+              <span>栅格数据处理</span>
+              <span>建成环境</span>
             </div>
           </div>
           <aside class="project-side">
@@ -386,14 +377,14 @@
 
         <article class="project-item" data-tags="other">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat424.pdf" target="_blank" rel="noopener">Statistical Experiment Design &amp; Analysis</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat424.pdf" target="_blank" rel="noopener">统计实验设计与分析</a></h3>
             <p>
-              使用 ANOVA 与 Fisher's LSD procedure 完成的 experimental design 与 statistical analysis 项目。
+              使用 ANOVA 与 Fisher's LSD完成的实验设计与统计分析项目。
             </p>
             <div class="project-tags">
               <span>ANOVA</span>
               <span>Fisher LSD</span>
-              <span>Experimental design</span>
+              <span>实验设计</span>
             </div>
           </div>
           <aside class="project-side">
@@ -404,15 +395,17 @@
 
         <article class="project-item" data-tags="other">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/FinalPaper_Group9.pdf" target="_blank" rel="noopener">Unpacking the Paradox of Profit Margins: An Analysis of Market Concentration and Economic Dynamics in the U.S. Meat Processing Industry</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/FinalPaper_Group9.pdf" target="_blank" rel="noopener">解读利润率悖论：美国肉类加工行业市场集中度与经济动态分析</a></h3>
             <p>
-              关于美国 meat processing industry 中 market concentration 与 profit margins 的 economic analysis。
-              <a href="https://pages.cs.wisc.edu/~sling/econ-project/Presentation_Group9.pdf" target="_blank" rel="noopener">Presentation</a>.
+              对美国肉类加工行业中市场集中度与利润率关系的经济分析。
+            </p>
+            <p class="demo-link">
+              <a href="https://pages.cs.wisc.edu/~sling/econ-project/Presentation_Group9.pdf" target="_blank" rel="noopener">PPT →</a>
             </p>
             <div class="project-tags">
-              <span>Industrial organization</span>
-              <span>Market concentration</span>
-              <span>Economics</span>
+              <span>产业组织</span>
+              <span>市场集中度</span>
+              <span>经济学</span>
             </div>
           </div>
           <aside class="project-side">
@@ -423,32 +416,14 @@
 
         <article class="project-item" data-tags="other">
           <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat240.html" target="_blank" rel="noopener">Analysis of NHL Player Statistics</a></h3>
+            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/Final_project_report.pdf" target="_blank" rel="noopener">美国社会经济因素与 HIV 患病率关系研究</a></h3>
             <p>
-              使用 NHL player-performance data 完成的入门级 statistical analysis 与 visualization 项目。
+              这是一个应用计量经济学与数据分析项目，用于考察社会经济变量与 HIV 患病率之间的关系。
             </p>
             <div class="project-tags">
-              <span>Data analysis</span>
-              <span>Visualization</span>
-              <span>Sports analytics</span>
-            </div>
-          </div>
-          <aside class="project-side">
-            <span>UW-Madison</span>
-            <span>STAT 240</span>
-          </aside>
-        </article>
-
-        <article class="project-item" data-tags="other">
-          <div class="project-main">
-            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/Final_project_report.pdf" target="_blank" rel="noopener">Examining the Relationship Between Socioeconomic Factors and HIV Prevalence in the United States</a></h3>
-            <p>
-              一个 applied econometrics 与 data analysis 项目，用于考察 socioeconomic variables 与 HIV prevalence 之间的关系。
-            </p>
-            <div class="project-tags">
-              <span>Applied data analysis</span>
-              <span>Public health</span>
-              <span>Economics</span>
+              <span>应用数据分析</span>
+              <span>公共卫生</span>
+              <span>经济学</span>
             </div>
           </div>
           <aside class="project-side">
@@ -456,6 +431,25 @@
             <span>ECON 570</span>
           </aside>
         </article>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat240.html" target="_blank" rel="noopener">NHL 球员统计数据分析</a></h3>
+            <p>
+              使用 NHL 球员表现数据完成的入门级统计分析与可视化项目。
+            </p>
+            <div class="project-tags">
+              <span>数据分析</span>
+              <span>可视化</span>
+              <span>体育数据分析</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>STAT 240</span>
+          </aside>
+        </article>
+        
       </section>
     </section>
   </main>
