@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jiahe Ling</title>
+  <meta name="description" content="Jiahe Ling 的个人主页。" />
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-title" href="index.html">Jiahe Ling</a>
+
+    <nav class="nav" aria-label="主导航">
+      <a class="active" href="index.html">首页</a>
+      <a href="education.html">教育</a>
+      <a href="research.html">研究</a>
+      <a href="projects.html">项目</a>
+      <a href="photolab.html">PhotoLab</a>
+      <span class="lang-switch" aria-label="语言切换"><span class="lang-current">CN</span><span class="lang-sep">/</span><a href="../index.html">EN</a></span>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <aside class="portrait-card" aria-label="个人头像">
+        <img class="portrait-img" src="../assets/profile2.png" alt="Jiahe Ling 的 AI 生成头像">
+        <p class="caption">AI-generated portrait.</p>
+      </aside>
+
+      <div class="intro">
+        <p class="eyebrow">欢迎！</p>
+
+        <h1>简介</h1>
+
+        <div class="bio">
+          <p>
+            我目前在 <a href="https://www.engineering.columbia.edu/academics/departments/industrial-engineering-and-operations-research-department" target="_blank" rel="noopener">Columbia University</a> 攻读 Operations Research 硕士，具有统计学、计算机科学和经济学背景。我的兴趣集中在 transportation analytics、operations research、machine learning 与 data systems 的交叉方向。在 Columbia 之前，我在 <a href="https://stat.uchicago.edu/" target="_blank" rel="noopener">University of Chicago</a> 完成统计学硕士，并在 <a href="https://www.wisc.edu/" target="_blank" rel="noopener">University of Wisconsin-Madison</a> 获得统计学、计算机科学与经济学荣誉理学学士学位。
+          </p>
+
+          <p>
+            我尤其关注如何为 mobility systems、logistics 和 urban operations 构建数据驱动模型，包括 routing、fleet sizing、facility location、simulation，以及不确定性下的大规模决策问题。
+          </p>
+
+          <p>
+            这个网站整理了我的研究、项目和学术经历；我也保留了一个小型 PhotoLab，用来记录我对摄影的兴趣。
+          </p>
+        </div>
+
+        <section class="news-section" aria-label="近期动态">
+          <h2>动态</h2>
+
+          <ul class="news-list">
+            <li>
+              <time datetime="2026-05">2026 年 5 月</time>
+              <span>
+                新的 working paper：<em>Transit Destination Inference from Single-Tap Bus Smart Card Data: A Sequential Modeling Framework</em>.
+              </span>
+            </li>
+
+            <li>
+              <time datetime="2026-05">2026 年 5 月</time>
+              <span>
+                新的 working paper：<em>A Two-Stage Scheduling Heuristic for the Deadline-Constrained Traveling Salesman Problem with a Drone Station (TSP-DS)</em>.
+              </span>
+            </li>
+
+            <li>
+              <time datetime="2026-01">2026 年 1 月</time>
+              <span>
+                我正在撰写 <a href="https://github.com/JiaheLing/A-Comprehensive-Guide-to-Statistical-Inference-and-Machine-Learning" target="_blank" rel="noopener"><em>A Comprehensive Guide to Statistical Inference and Machine Learning</em></a>，希望为具有统计学基础、希望深入理解现代 machine learning 结构的读者搭建一座从传统 statistical learning 到现代 machine learning 的桥梁。
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="links" aria-label="重要链接">
+          <a class="link-card" href="mailto:jiahe_ling@outlook.com">
+            <span class="link-title">Email</span>
+            <span class="link-desc">jiahe_ling@outlook.com</span>
+          </a>
+
+          <a class="link-card" href="https://github.com/JiaheLing" target="_blank" rel="noopener">
+            <span class="link-title">GitHub</span>
+            <span class="link-desc">@JiaheLing</span>
+          </a>
+
+          <a class="link-card" href="../assets/cv.pdf" target="_blank" rel="noopener">
+            <span class="link-title">CV</span>
+            <span class="link-desc">敬请期待</span>
+          </a>
+
+          <a class="link-card" href="https://scholar.google.com/citations?user=jWOJp5sAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener">
+            <span class="link-title">Scholar</span>
+            <span class="link-desc">论文与引用</span>
+          </a>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Jiahe Ling</span>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

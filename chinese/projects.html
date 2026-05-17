@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>项目 · Jiahe Ling</title>
+  <meta name="description" content="Jiahe Ling 的项目页面。" />
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-title" href="index.html">Jiahe Ling</a>
+
+    <nav class="nav" aria-label="主导航">
+      <a href="index.html">首页</a>
+      <a href="education.html">教育</a>
+      <a href="research.html">研究</a>
+      <a class="active" href="projects.html">项目</a>
+      <a href="photolab.html">PhotoLab</a>
+      <span class="lang-switch" aria-label="语言切换"><span class="lang-current">CN</span><span class="lang-sep">/</span><a href="../pages/projects.html">EN</a></span>
+    </nav>
+  </header>
+
+  <main class="page content-page projects-page">
+    <h1>项目</h1>
+
+    <section class="project-focus-grid" aria-label="重点方向">
+      <article class="project-focus-card">
+        <p class="focus-kicker">重点方向</p>
+        <h2>Transportation Analytics &amp; Operations Research</h2>
+        <p>关注 transit systems、fleet operations、routing、scheduling、facility location 与 optimization models。</p>
+      </article>
+
+      <article class="project-focus-card">
+        <p class="focus-kicker">重点方向</p>
+        <h2>Machine Learning &amp; Statistical Modeling</h2>
+        <p>关注 generative models、Bayesian inference、computer vision、NLP、supervised learning 与 model evaluation。</p>
+      </article>
+
+      <article class="project-focus-card">
+        <p class="focus-kicker">重点方向</p>
+        <h2>Data Engineering &amp; DBMS</h2>
+        <p>关注 database systems、big data pipelines、distributed systems、HPC 与 analytics infrastructure。</p>
+      </article>
+    </section>
+
+
+    <section class="project-updates" aria-label="项目动态">
+      <h2>动态</h2>
+
+      <ul class="project-update-list">
+        <li>
+          <time>2026 年 5 月</time>
+          <span>
+            正在开发一个 Agentic AI 聊天工具。
+          </span>
+        </li>
+
+        <li>
+          <time>2026 年 4 月</time>
+          <span>
+            正在推进 <em>Multi-Scenario Bus Dispatching and Real-Time Routing Engine</em>。
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="project-section" aria-label="项目筛选">
+      <div class="section-heading-row compact">
+        <div>
+          <p class="section-kicker">作品集</p>
+          <h2>项目经历</h2>
+        </div>
+      </div>
+
+      <div class="project-filters" role="group" aria-label="筛选项目">
+        <button class="project-filter active" data-filter="all" type="button">全部 (17)</button>
+        <button class="project-filter" data-filter="transportation" type="button">Transportation / OR (4)</button>
+        <button class="project-filter" data-filter="ml" type="button">Machine Learning (5)</button>
+        <button class="project-filter" data-filter="systems" type="button">Data Engineering / DBMS (3)</button>
+        <button class="project-filter" data-filter="industry" type="button">行业项目 (1)</button>
+        <button class="project-filter" data-filter="other" type="button">其他 (5)</button>
+      </div>
+    </section>
+
+    <section class="project-portfolio" aria-label="项目作品集">
+      <section class="project-category" data-category="transportation">
+        <div class="project-category-heading">
+          <div>
+            <p class="section-kicker">Transportation / OR</p>
+            <h2>Transportation Analytics &amp; Operations Research</h2>
+          </div>
+          <span>4 projects</span>
+        </div>
+
+        <article class="project-item" data-tags="transportation industry">
+          <div class="project-main">
+            <h3>Multi-Scenario Bus Dispatching and Real-Time Routing Engine</h3>
+            <p>
+              设计并实现了一个支持 fixed-route、dynamic ride-pooling 与 fusion 模式的 bus dispatching engine，用于提升
+              fleet utilization 并缩短 passenger journey times。项目中构建并求解实时 routing models，包括用于
+              dynamic cruising 的 open pickup-and-delivery TSP，以及用于 segment-based route deviations 的 fixed-endpoint TSPP。
+            </p>
+            <div class="project-tags">
+              <span>Bus dispatching</span>
+              <span>Dynamic routing</span>
+              <span>PDP-TSP</span>
+              <span>TSPP</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>行业项目</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3>
+              <a href="../projects/ColumbiaShuttle.pdf" target="_blank" rel="noopener">
+                A Hybrid Approach to Rideshare Fleet Sizing: Integrating M/M/s Queueing Models with Agent-Based Simulation (Columbia University Evening Shuttle)
+              </a>
+            </h3>
+            <p>
+              围绕 Columbia Evening Shuttle 的 hybrid fleet-sizing 项目，结合 analytical M/M/s queueing benchmark
+              与 agent-based simulation，评估不同运营配置下的 driver staffing、wait time、time in system
+              与 driver utilization。
+            </p>
+            <div class="project-tags">
+              <span>Fleet sizing</span>
+              <span>M/M/s queueing</span>
+              <span>Agent-based simulation</span>
+              <span>Open PDP-TSP</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>哥伦比亚大学</span>
+            <span>IEOR 4418</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/cs-project/jling9_hzhang784_report.pdf" target="_blank" rel="noopener">Chicago Divvy Bike Supply &amp; Station Management</a></h3>
+            <p>
+              针对 Chicago Divvy bike-share network，建立 integer 与 mixed-integer optimization models，用于 bike supply、
+              station selection 以及 pricing-aware station management。
+            </p>
+            <div class="project-tags">
+              <span>Facility location</span>
+              <span>Bike positioning</span>
+              <span>IP/MIP</span>
+              <span>Pricing optimization</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>CS/ECE/ISyE 524</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="transportation">
+          <div class="project-main">
+            <h3><a href="../projects/ChildCare.pdf" target="_blank" rel="noopener">Eliminating Child Care Deserts in New York State: A Budget-Minimizing Siting and Expansion Model</a></h3>
+            <p>
+              构建了一个 integer optimization framework，用于在 ZIP-level coverage、age-specific capacity 和 distance
+              separation constraints 下决定新建 child-care facilities 的位置以及现有容量的扩展方式。
+            </p>
+            <div class="project-tags">
+              <span>Facility location</span>
+              <span>Capacity expansion</span>
+              <span>MIP</span>
+              <span>Public-service access planning</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>哥伦比亚大学</span>
+            <span>IEOR 4004</span>
+          </aside>
+        </article>
+      </section>
+
+      <section class="project-category" data-category="ml">
+        <div class="project-category-heading">
+          <div>
+            <p class="section-kicker">Machine Learning</p>
+            <h2>Machine Learning &amp; Statistical Modeling</h2>
+          </div>
+          <span>5 projects</span>
+        </div>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3><a href="../projects/Diffusion.pdf" target="_blank" rel="noopener">Diffusion Models with a Time-Conditioned U-Net on MNIST</a></h3>
+            <p>
+              实现并研究了用于图像生成的 denoising diffusion models 与 time-conditioned U-Net architecture。
+            </p>
+            <div class="project-tags">
+              <span>Diffusion models</span>
+              <span>U-Net</span>
+              <span>Generative ML</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>University of Chicago</span>
+            <span>STAT 37601</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3><a href="https://github.com/aschein/stat_348_2025/tree/main/assignments" target="_blank" rel="noopener">Probabilistic Machine Learning and Variational Inference Implementations</a></h3>
+            <p>
+              使用 Python 实现了一组 probabilistic machine learning 与 inference 模型，包括 Bayesian linear regression、
+              hidden Markov models、Gibbs sampling、EM、coordinate-ascent variational inference、variational autoencoders、
+              Poisson matrix factorization with mean-field variational inference、variable elimination 与 forward-backward inference。
+            </p>
+            <div class="project-tags">
+              <span>Bayesian inference</span>
+              <span>Latent-variable models</span>
+              <span>Variational inference</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>University of Chicago</span>
+            <span>STAT 34800</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3><a href="https://sites.google.com/wisc.edu/639project/" target="_blank" rel="noopener">Computer Vision for Quality Inspection of Manufacturing Product</a></h3>
+            <p>
+              将 computer vision 方法应用于 manufacturing quality inspection，结合 texture features、CNN 与 model interpretation。
+            </p>
+            <div class="project-tags">
+              <span>Computer vision</span>
+              <span>CNN</span>
+              <span>SHAP</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>CS 639</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3><a href="https://engrxiv.org/preprint/view/3139/version/4428" target="_blank" rel="noopener">Online Twitter Bot Detection</a></h3>
+            <p>
+              使用 neural networks 与 transformer-based modeling 识别自动化社交媒体账号的 NLP 项目。
+            </p>
+            <div class="project-tags">
+              <span>NLP</span>
+              <span>Transformers</span>
+              <span>Classification</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>ECE/CS 539</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="ml">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/451Report.Group7.pdf" target="_blank" rel="noopener">Exploring Card Fraud Transaction</a></h3>
+            <p>
+              将 supervised learning 方法应用于 card-fraud transaction detection，包括 decision trees、k-nearest neighbors、
+              logistic regression 及相关 classifiers。
+            </p>
+            <div class="project-tags">
+              <span>Supervised learning</span>
+              <span>Fraud detection</span>
+              <span>Classification</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>STAT 451</span>
+          </aside>
+        </article>
+      </section>
+
+      <section class="project-category" data-category="systems">
+        <div class="project-category-heading">
+          <div>
+            <p class="section-kicker">Systems / Data Engineering</p>
+            <h2>Data Engineering &amp; DBMS</h2>
+          </div>
+          <span>3 projects</span>
+        </div>
+
+        <article class="project-item" data-tags="systems">
+          <div class="project-main">
+            <h3><a href="https://github.com/cs544-wisc/f23/tree/main" target="_blank" rel="noopener">Introduction to Big Data Systems</a></h3>
+            <p>
+              使用 PyArrow、Docker、HDFS、Spark、HBase、Cassandra 与 Kafka Streams 构建 data-system projects。
+            </p>
+            <div class="project-tags">
+              <span>PyArrow</span>
+              <span>Spark</span>
+              <span>Kafka Streams</span>
+              <span>Cassandra</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>CS 544</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="systems">
+          <div class="project-main">
+            <h3><a href="https://github.com/uwmadison-cs564" target="_blank" rel="noopener">Database Management Systems (DBMS): Design and Implementation</a></h3>
+            <p>
+              完成 SQL query projects，并用 C++ 实现 database internals 中的核心组件，包括 buffer management 和 join algorithms。
+            </p>
+            <div class="project-tags">
+              <span>SQL</span>
+              <span>C++</span>
+              <span>Buffer manager</span>
+              <span>Join algorithms</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>CS 564</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="systems">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/report-1.html" target="_blank" rel="noopener">AdTracking Fraud Detection</a></h3>
+            <p>
+              一个 high-performance analytics 项目，使用 UW-Madison 基于 HTCondor 的 HPC 环境进行大规模数据处理与模型实验。
+            </p>
+            <div class="project-tags">
+              <span>HPC</span>
+              <span>HTCondor</span>
+              <span>Fraud detection</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>STAT 479 / STAT 405 / 605</span>
+          </aside>
+        </article>
+      </section>
+
+      <section class="project-category" data-category="other">
+        <div class="project-category-heading">
+          <div>
+            <p class="section-kicker">其他</p>
+            <h2>Applied Data Analysis, Visualization &amp; Economics</h2>
+          </div>
+          <span>5 projects</span>
+        </div>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="../projects/ClimateDemographics.pdf" target="_blank" rel="noopener">A Spatial Temporal Visualization Tool of Climate-Demographic Interactions and Built Environments</a></h3>
+            <p>
+              Built a geospatial visualization tool connecting climate projections, population,
+              land use, housing density, and city boundaries across long-horizon RCP 4.5 / RCP 8.5 scenarios.
+            </p>
+            <p class="demo-link">
+              <a href="https://692bdc55a6e76bc40e28861b--luminous-chebakia-6ee4f3.netlify.app/sample"
+                target="_blank" rel="noopener">
+                Interactive prototype →
+              </a>
+              <span class="caption">A sample panel rendered on New York State data.</span>
+            </p>
+            <div class="project-tags">
+              <span>Geospatial visualization</span>
+              <span>Climate analytics</span>
+              <span>Raster processing</span>
+              <span>Built environment</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>哥伦比亚大学</span>
+            <span>IEOR 4511</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat424.pdf" target="_blank" rel="noopener">Statistical Experiment Design &amp; Analysis</a></h3>
+            <p>
+              使用 ANOVA 与 Fisher's LSD procedure 完成的 experimental design 与 statistical analysis 项目。
+            </p>
+            <div class="project-tags">
+              <span>ANOVA</span>
+              <span>Fisher LSD</span>
+              <span>Experimental design</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>STAT/ME 424</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/FinalPaper_Group9.pdf" target="_blank" rel="noopener">Unpacking the Paradox of Profit Margins: An Analysis of Market Concentration and Economic Dynamics in the U.S. Meat Processing Industry</a></h3>
+            <p>
+              关于美国 meat processing industry 中 market concentration 与 profit margins 的 economic analysis。
+              <a href="https://pages.cs.wisc.edu/~sling/econ-project/Presentation_Group9.pdf" target="_blank" rel="noopener">Presentation</a>.
+            </p>
+            <div class="project-tags">
+              <span>Industrial organization</span>
+              <span>Market concentration</span>
+              <span>Economics</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>ECON 458</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/stat-project/stat240.html" target="_blank" rel="noopener">Analysis of NHL Player Statistics</a></h3>
+            <p>
+              使用 NHL player-performance data 完成的入门级 statistical analysis 与 visualization 项目。
+            </p>
+            <div class="project-tags">
+              <span>Data analysis</span>
+              <span>Visualization</span>
+              <span>Sports analytics</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>STAT 240</span>
+          </aside>
+        </article>
+
+        <article class="project-item" data-tags="other">
+          <div class="project-main">
+            <h3><a href="https://pages.cs.wisc.edu/~sling/econ-project/Final_project_report.pdf" target="_blank" rel="noopener">Examining the Relationship Between Socioeconomic Factors and HIV Prevalence in the United States</a></h3>
+            <p>
+              一个 applied econometrics 与 data analysis 项目，用于考察 socioeconomic variables 与 HIV prevalence 之间的关系。
+            </p>
+            <div class="project-tags">
+              <span>Applied data analysis</span>
+              <span>Public health</span>
+              <span>Economics</span>
+            </div>
+          </div>
+          <aside class="project-side">
+            <span>UW-Madison</span>
+            <span>ECON 570</span>
+          </aside>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Jiahe Ling</span>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const filterButtons = document.querySelectorAll(".project-filter");
+    const categories = document.querySelectorAll(".project-category");
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filter;
+
+        filterButtons.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        categories.forEach((category) => {
+          let visibleCount = 0;
+
+          category.querySelectorAll(".project-item").forEach((item) => {
+            const tags = item.dataset.tags || "";
+            const show = filter === "all" || tags.includes(filter);
+            item.hidden = !show;
+            if (show) visibleCount += 1;
+          });
+
+          category.hidden = visibleCount === 0;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

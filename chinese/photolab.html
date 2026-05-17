@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PhotoLab · Jiahe Ling</title>
+  <meta name="description" content="Jiahe Ling 的 PhotoLab 页面。" />
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../photography/photos.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-title" href="index.html">Jiahe Ling</a>
+
+    <nav class="nav" aria-label="主导航">
+      <a href="index.html">首页</a>
+      <a href="education.html">教育</a>
+      <a href="research.html">研究</a>
+      <a href="projects.html">项目</a>
+      <a class="active" href="photolab.html">PhotoLab</a>
+      <span class="lang-switch" aria-label="语言切换"><span class="lang-current">CN</span><span class="lang-sep">/</span><a href="../pages/photolab.html">EN</a></span>
+    </nav>
+  </header>
+
+  <main class="page content-page photolab-page">
+    <h1>PhotoLab</h1>
+
+    <section class="photo-note" aria-label="PhotoLab 简介">
+      <p>
+        我对数码摄影和胶片摄影都很感兴趣，尤其喜欢风景摄影。
+        这里展示了一些来自近期旅行和日常观察的照片。
+      </p>
+    </section>
+
+    <section class="photo-section" aria-labelledby="digital-title">
+      <div class="photo-section-heading">
+        <div>
+          <p class="section-kicker">数码</p>
+          <h2 id="digital-title">数码照片</h2>
+        </div>
+        <span id="digital-count">0 photos</span>
+      </div>
+
+      <p class="photo-section-intro">
+        我的数码照片主要使用 Fujifilm X100VI 和 iPhone 17 Pro 拍摄。
+      </p>
+
+      <div class="photo-carousel" aria-label="数码摄影作品">
+        <button class="photo-nav-button" id="digital-prev" type="button" aria-label="上一张数码照片">‹</button>
+        <div class="photo-stage" id="digital-gallery"></div>
+        <button class="photo-nav-button" id="digital-next" type="button" aria-label="下一张数码照片">›</button>
+      </div>
+      <div class="photo-position" id="digital-position" aria-live="polite"></div>
+    </section>
+
+    <section class="photo-section" aria-labelledby="film-title">
+      <div class="photo-section-heading">
+        <div>
+          <p class="section-kicker">胶片</p>
+          <h2 id="film-title">胶片照片</h2>
+        </div>
+        <span id="film-count">0 photos</span>
+      </div>
+
+      <p class="photo-section-intro">
+        对我来说，胶片摄影最有吸引力的地方主要有两种：一是 large-format work，胶片或透明片的物理尺寸本身能够保留极高的细节；二是 reversal film，放在灯箱上用 loupe 观看时，那种明亮、直接的色彩体验会把拍摄地点和当时的记忆重新带回来。
+      </p>
+
+      <div class="photo-carousel" aria-label="胶片摄影作品">
+        <button class="photo-nav-button" id="film-prev" type="button" aria-label="上一张胶片照片">‹</button>
+        <div class="photo-stage" id="film-gallery"></div>
+        <button class="photo-nav-button" id="film-next" type="button" aria-label="下一张胶片照片">›</button>
+      </div>
+      <div class="photo-position" id="film-position" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Jiahe Ling</span>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && inQuotes && next === '"') {
+          cell += '"';
+          i++;
+        } else if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === "," && !inQuotes) {
+          row.push(cell.trim());
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+          if (char === "\r" && next === "\n") i++;
+          row.push(cell.trim());
+          cell = "";
+          if (row.some((value) => value.length > 0)) rows.push(row);
+          row = [];
+        } else {
+          cell += char;
+        }
+      }
+
+      if (cell.length > 0 || row.length > 0) {
+        row.push(cell.trim());
+        if (row.some((value) => value.length > 0)) rows.push(row);
+      }
+
+      if (rows.length === 0) return [];
+
+      const headers = rows[0].map((header) => header.trim());
+      return rows.slice(1).map((values) => {
+        const item = {};
+        headers.forEach((header, index) => {
+          item[header] = values[index] || "";
+        });
+        return item;
+      }).filter((item) => item.filename);
+    }
+
+    function photoCard(item, folder, type) {
+      const card = document.createElement("article");
+      card.className = "photo-card";
+
+      const imageWrap = document.createElement("div");
+      imageWrap.className = "photo-image-wrap";
+
+      const image = document.createElement("img");
+      image.src = `../photography/${folder}/${item.filename}`;
+      image.alt = item.description || item.location || `${type} photo`;
+      image.loading = "lazy";
+      image.onerror = () => {
+        card.classList.add("photo-missing-image");
+        imageWrap.innerHTML = `<span>图片缺失：<br>${item.filename}</span>`;
+      };
+
+      imageWrap.appendChild(image);
+      card.appendChild(imageWrap);
+
+      const meta = document.createElement("div");
+      meta.className = "photo-meta";
+
+      const title = document.createElement("h3");
+      title.textContent = item.location || item.filename || "未命名";
+      meta.appendChild(title);
+
+      const detail = document.createElement("p");
+      if (type === "film") {
+        detail.textContent = [item.device, item.film].filter(Boolean).join(" · ");
+      } else {
+        detail.textContent = item.device || "";
+      }
+      meta.appendChild(detail);
+
+      if (item.description) {
+        const description = document.createElement("p");
+        description.className = "photo-description";
+        description.textContent = item.description;
+        meta.appendChild(description);
+      }
+
+      if (item.date) {
+        const date = document.createElement("span");
+        date.className = "photo-date";
+        date.textContent = item.date;
+        meta.appendChild(date);
+      }
+
+      card.appendChild(meta);
+      return card;
+    }
+
+    function emptyState(folder, type) {
+      const empty = document.createElement("div");
+      empty.className = "photo-empty";
+      empty.innerHTML = `
+        <strong>还没有列出 ${type} 照片。</strong>
+        <span>
+          将图片添加到 <code>photography/${folder}/</code>, update <code>photos.csv</code>,
+          然后运行 <code>python scripts/generate_photolab_manifest.py</code>.
+        </span>
+      `;
+      return empty;
+    }
+
+    async function loadCSV(csvPath) {
+      if (window.location.protocol === "file:") return [];
+      try {
+        const response = await fetch(csvPath, { cache: "no-store" });
+        if (!response.ok) return [];
+        const text = await response.text();
+        return parseCSV(text);
+      } catch {
+        return [];
+      }
+    }
+
+    function createCarousel({ items, folder, type, galleryId, countId, positionId, prevId, nextId }) {
+      const gallery = document.getElementById(galleryId);
+      const count = document.getElementById(countId);
+      const position = document.getElementById(positionId);
+      const prev = document.getElementById(prevId);
+      const next = document.getElementById(nextId);
+      let index = 0;
+
+      count.textContent = `${items.length} 张照片`;
+
+      function render() {
+        gallery.innerHTML = "";
+
+        if (items.length === 0) {
+          gallery.appendChild(emptyState(folder, type));
+          position.textContent = "";
+          prev.disabled = true;
+          next.disabled = true;
+          return;
+        }
+
+        gallery.appendChild(photoCard(items[index], folder, type));
+        position.textContent = `${index + 1} / ${items.length}`;
+        prev.disabled = items.length <= 1;
+        next.disabled = items.length <= 1;
+      }
+
+      prev.addEventListener("click", () => {
+        if (items.length <= 1) return;
+        index = (index - 1 + items.length) % items.length;
+        render();
+      });
+
+      next.addEventListener("click", () => {
+        if (items.length <= 1) return;
+        index = (index + 1) % items.length;
+        render();
+      });
+
+      gallery.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft") prev.click();
+        if (event.key === "ArrowRight") next.click();
+      });
+
+      render();
+    }
+
+    async function loadGallery({ csvPath, manifestItems, folder, type, galleryId, countId, positionId, prevId, nextId }) {
+      const csvItems = await loadCSV(csvPath);
+      const items = csvItems.length > 0 ? csvItems : (manifestItems || []);
+
+      createCarousel({
+        items,
+        folder,
+        type,
+        galleryId,
+        countId,
+        positionId,
+        prevId,
+        nextId
+      });
+    }
+
+    const manifest = window.PHOTOLAB || { digital: [], film: [] };
+
+    loadGallery({
+      csvPath: "../photography/digital/photos.csv",
+      manifestItems: manifest.digital,
+      folder: "digital",
+      type: "digital",
+      galleryId: "digital-gallery",
+      countId: "digital-count",
+      positionId: "digital-position",
+      prevId: "digital-prev",
+      nextId: "digital-next"
+    });
+
+    loadGallery({
+      csvPath: "../photography/film/photos.csv",
+      manifestItems: manifest.film,
+      folder: "film",
+      type: "film",
+      galleryId: "film-gallery",
+      countId: "film-count",
+      positionId: "film-position",
+      prevId: "film-prev",
+      nextId: "film-next"
+    });
+  </script>
+</body>
+</html>
