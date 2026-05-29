@@ -79,6 +79,30 @@ window.PHOTOLAB = {
       "location": "Miami, FL",
       "description": "Lily-covered wetland in Everglades National Park.",
       "date": "2026-04"
+    },
+    {
+      "filename": "flowers1.JPG",
+      "device": "Olympus 35 RC",
+      "film": "Kodak Ektachrome E100",
+      "location": "New York, NY",
+      "description": "Pink roses blooming against lush foliage near Stuyvesant Town-Peter Cooper Village.",
+      "date": "2026-05"
+    },
+    {
+      "filename": "flowers2.JPG",
+      "device": "Olympus 35 RC",
+      "film": "Kodak Ektachrome E100",
+      "location": "New York, NY",
+      "description": "Clustered white flowers on a green bush along the Hudson River Waterfront Greenway.",
+      "date": "2026-05"
+    },
+    {
+      "filename": "nyc1.JPG",
+      "device": "Olympus 35 RC",
+      "film": "Kodak Ektachrome E100",
+      "location": "New York, NY",
+      "description": "The Con Edison powerplant and an E 13th St sign beneath a partly cloudy sky.",
+      "date": "2026-05"
     }
   ]
 };
