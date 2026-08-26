@@ -1,0 +1,51 @@
+---
+title: Notes
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notes · Jiahe Ling</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-title" href="../index.html">Jiahe Ling</a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="../index.html">Home</a>
+      <a href="education.html">Education</a>
+      <a href="research.html">Research</a>
+      <a href="notes.html">Notes</a>
+      <a href="projects.html">Projects</a>
+      <a href="photolab.html">PhotoLab</a>
+      <span class="lang-switch"><span class="lang-current">EN</span><span class="lang-sep">/</span><a href="../chinese/index.html">CN</a></span>
+    </nav>
+  </header>
+
+  <main class="page content-page">
+    <h1>Notes</h1>
+    <p class="page-intro">Working notes on operations research, optimization, and data engineering.</p>
+
+    {% assign notes = site.pages | where_exp: "p", "p.dir == '/notes/'" | sort: "date" | reverse %}
+
+    <ul class="note-list">
+      {% for note in notes %}
+      <li class="note-list-item">
+        <time datetime="{{ note.date | date_to_xmlschema }}">{{ note.date | date: "%b %Y" }}</time>
+        <div>
+          <a class="note-list-title" href="{{ note.url }}">{{ note.title }}</a>
+          {% if note.summary %}<p class="note-list-summary">{{ note.summary }}</p>{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Jiahe Ling</span>
+  </footer>
+
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

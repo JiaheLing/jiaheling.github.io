@@ -1,0 +1,18 @@
+title: Jiahe Ling
+url: "https://jiaheling.com"
+baseurl: ""
+
+defaults:
+  - scope:
+      path: "notes"
+      type: pages
+    values:
+      layout: note
+
+markdown: kramdown
+kramdown:
+  input: GFM
+
+exclude:
+  - scripts/
+  - README.md

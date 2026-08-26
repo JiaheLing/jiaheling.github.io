@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ page.title }} · Jiahe Ling</title>
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-title" href="/">Jiahe Ling</a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/pages/education.html">Education</a>
+      <a href="/pages/research.html">Research</a>
+      <a class="active" href="/pages/notes.html">Notes</a>
+      <a href="/pages/projects.html">Projects</a>
+      <a href="/pages/photolab.html">PhotoLab</a>
+      <span class="lang-switch"><span class="lang-current">EN</span><span class="lang-sep">/</span><a href="/chinese/index.html">CN</a></span>
+    </nav>
+  </header>
+
+  <main class="page content-page">
+    <p class="eyebrow"><a href="/pages/notes.html">← All notes</a></p>
+    <h1>{{ page.title }}</h1>
+    <p class="note-date">{{ page.date | date: "%B %-d, %Y" }}</p>
+
+    <article class="note-body">
+      {{ content }}
+    </article>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Jiahe Ling</span>
+  </footer>
+
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

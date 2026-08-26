@@ -1189,3 +1189,27 @@ h1 {
     display: none;
   }
 }
+
+/* Notes */
+.note-list { list-style: none; margin: 30px 0 0; padding: 0; }
+.note-list-item {
+  display: grid; grid-template-columns: 92px minmax(0,1fr);
+  gap: 20px; padding: 18px 0; border-top: 1px solid var(--line);
+}
+.note-list-item:last-child { border-bottom: 1px solid var(--line); }
+.note-list-item > time { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.note-list-title { color: var(--text); text-decoration: none; font-size: 17px; font-weight: 640; }
+.note-list-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+.note-list-summary { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+.note-date { color: var(--muted); font-size: 13px; margin: -6px 0 24px; }
+.note-body { max-width: 720px; }
+.note-body h2 { margin: 40px 0 12px; font-size: 21px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.note-body img { max-width: 100%; border-radius: var(--radius); }
+.note-body pre {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; padding: 16px 18px; overflow-x: auto; font-size: 13px;
+}
+.note-body code { font-size: 0.88em; }
+.note-body table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.note-body th, .note-body td { border-bottom: 1px solid var(--line); padding: 9px 12px; text-align: left; }
