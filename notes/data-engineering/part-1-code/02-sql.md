@@ -113,7 +113,7 @@ TopN问题可以分为以下2类：
 )
 ```
 
-1. `OVER()`：表示使用窗口计算。
+1. `OVER()`：使用窗口计算（空`OVER()`表示把整个数据集作为一个窗口）。
     ```sql
     SUM(amount) OVER (
         PARTITION BY user_id
@@ -270,9 +270,14 @@ SUM(amount) OVER (
 ```
 
 
+
 #### 窗口函数和窗口帧的关系
 
-并不是所有窗口函数都需要显式指定窗口帧，**排名类函数不需要显式指定窗口帧**。
+并不是所有窗口函数都需要显式指定窗口帧!
+
+##### 不需要窗口帧
+
+排名类函数以及前后行定位函数通常不需要显式指定 `ROWS` 或 `RANGE`，常见函数包括：
 
 ```sql
 ROW_NUMBER()
@@ -280,19 +285,31 @@ RANK()
 DENSE_RANK()
 NTILE()
 PERCENT_RANK()
+LAG()
+LEAD()
 ```
 
-因为它们主要关心当前行在整个分区排序以后处于什么位置，不需要显式指定窗口帧 `ROWS` 或 `RANGE`。通常只需要：
+- `ROW_NUMBER()`、`RANK()`、`DENSE_RANK()`、`NTILE()`、`PERCENT_RANK()` 主要关心**当前行在整个分区**按照 `ORDER BY` 排序之后所处的位置，因此通常只需要 `PARTITION BY + ORDER BY`：
+    ```sql
+    ROW_NUMBER() OVER (
+        PARTITION BY user_id
+        ORDER BY dt
+    ) AS rn
+    ```
 
-```sql
-函数() OVER (
-    PARTITION BY ...
-    ORDER BY ...
-)
-```
+- `LAG()` / `LEAD()` 用于直接获取当前行前面或后面的某一行，本身已经通过参数指定了偏移量，因此通常也不需要窗口帧。例如：
+    ```sql
+    LAG(price, 1) OVER (
+        PARTITION BY sku_id
+        ORDER BY dt
+    ) AS last_price
+    ```
 
+> 可以简单理解为：`ROW_NUMBER()` / `RANK()` 等函数用于判断“当前行排第几”，`LAG()` / `LEAD()` 用于寻找“当前行前面或后面的某一行”，它们都不是对一段窗口数据进行聚合，因此通常不需要 `ROWS / RANGE`。
 
-窗口帧主要对下面这些函数更有意义，因为这些函数需要明确当前这一行计算时，到底应该使用哪些行，
+##### 需要窗口帧
+
+窗口帧主要用于需要对“一段数据范围”进行计算的窗口函数，常见函数包括：
 
 ```sql
 SUM()
@@ -303,6 +320,142 @@ MAX()
 FIRST_VALUE()
 LAST_VALUE()
 ```
+
+`SUM()`、`AVG()`、`COUNT()`、`MIN()`、`MAX()` 这类聚合函数需要根据业务需求确定当前行计算时使用哪些行。例如，计算每个用户按照日期的累计消费金额（`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` 表示从当前分区的第一行一直计算到当前行，因此可以实现累计求和）：
+
+```sql
+SUM(amount) OVER (
+    PARTITION BY user_id
+    ORDER BY dt
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+) AS total_amount
+```
+
+`FIRST_VALUE()` / `LAST_VALUE()` 也需要特别注意窗口帧，因为它们获取的是当前窗口帧中的第一个值或最后一个值，而不一定是整个 `PARTITION` 的第一个值或最后一个值。尤其是 `LAST_VALUE()`，如果希望获取整个分区真正的最后一个值，可以显式指定完整窗口帧：
+
+```sql
+LAST_VALUE(price) OVER (
+    PARTITION BY sku_id
+    ORDER BY dt
+    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+) AS last_price
+```
+
+### 全局TopN问题
+
+#### 定义
+全局TopN问题是指在**所有数据**中找出排名前 N 的记录，通常用于需要获取整体排名靠前的数据场景。
+
+#### 答案
+
+`ORDER BY + LIMIT N` 是最常见的全局TopN问题解决方案：
+
+```sql
+SELECT student_id, student_name, math_score
+FROM student_achievement_info
+ORDER BY math_score DESC
+LIMIT 10
+```
+
+#### 执行
+底层执行引擎一般会尝试做优化，但优化效果会受到执行引擎版本、参数配置、limit 大小、SQL 复杂度和数据量的影响。
+
+Hive、Spark 等执行引擎一般会尝试做 TopN 优化，例如先在局部阶段取每个分区的 TopN，再将局部候选结果汇总，最后计算全局 TopN。这样可以显著减少最终排序阶段的数据量。
+
+
+
+### 分组TopN问题
+
+#### 定义
+分组TopN问题是指在**每个分组**中找出排名前 N 的记录，通常用于需要获取各个组内排名靠前的数据场景。
+
+#### 答案
+
+子查询 + 排序开窗函数 + where过滤
+
+1. **TopN**：求每个班级中，数学成绩排名前10的学生信息：
+
+    ```sql
+    SELECT student_id, student_name, math_score, class_name
+    FROM (
+        SELECT student_id, 
+            student_name, 
+            math_score, 
+            class_name,
+            ROW_NUMBER() OVER (
+                    PARTITION BY class_name 
+                    ORDER BY math_score DESC
+            ) AS rk
+        FROM student_achievement_info
+    ) as t
+    WHERE rk <= 10
+    ```
+
+2. **百分比**：求每个班级中，数学成绩排名前30%的学生信息
+    ```sql
+    SELECT student_id, student_name, math_score, class_name
+    FROM (
+        SELECT student_id, 
+            student_name, 
+            math_score, 
+            class_name,
+            PERCENT_RANK() OVER (
+                    PARTITION BY class_name 
+                    ORDER BY math_score DESC
+            ) AS prk
+        FROM student_achievement_info
+    ) as t
+    WHERE prk <= 0.30
+    ```
+
+3. **分组与整体**：求每个班级中，数学成绩排名前10的学生信息，以及这些学生和全校第一名的数学成绩差距
+
+    ```sql
+    SELECT student_id, student_name, math_score, class_name, (max_math_score - math_score) AS score_diff
+    FROM (
+        SELECT student_id, 
+            student_name, 
+            math_score, 
+            class_name,
+            ROW_NUMBER() OVER (
+                    PARTITION BY class_name 
+                    ORDER BY math_score DESC
+            ) AS rk,
+            MAX(math_score) OVER () AS max_math_score
+        FROM student_achievement_info
+    ) as t
+    WHERE rk <= 10
+    ```
+
+4. **Top1**: 求平均分Top1的班级名称
+    - `ROW_NUMBER()` 结合 `rn = 1` 过滤
+        ```sql
+        SELECT class
+        FROM (
+            SELECT class,
+                AVG(math_score) AS avg_score,
+                ROW_NUMBER() OVER (
+                    ORDER BY AVG(math_score) DESC
+                ) AS rn
+            FROM score_list
+            GROUP BY class
+        ) as t
+        WHERE rn = 1
+        ```
+    - `FIRST_VALUE()` 结合窗口函数
+        ```sql
+        SELECT class,
+            AVG(math_score) AS avg_score,
+            FIRST_VALUE(class) OVER (
+                ORDER BY AVG(math_score) DESC
+            ) AS top_class
+        FROM score_list
+        GROUP BY class
+        ```
+
+
+
+
 
 
 
