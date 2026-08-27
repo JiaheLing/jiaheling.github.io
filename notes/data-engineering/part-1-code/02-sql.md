@@ -376,14 +376,13 @@ Hive、Spark 等执行引擎一般会尝试做 TopN 优化，例如先在局部�
 1. **TopN**：求每个班级中，数学成绩排名前10的学生信息：
 
     ```sql
-    SELECT student_id, student_name, math_score, class_name
+    SELECT year, class_name, student_id, student_name, math_score
     FROM (
-        SELECT student_id, 
+        SELECT year,  class_name, student_id, 
             student_name, 
             math_score, 
-            class_name,
             ROW_NUMBER() OVER (
-                    PARTITION BY class_name 
+                    PARTITION BY year, class_name 
                     ORDER BY math_score DESC
             ) AS rk
         FROM student_achievement_info
@@ -393,14 +392,13 @@ Hive、Spark 等执行引擎一般会尝试做 TopN 优化，例如先在局部�
 
 2. **百分比**：求每个班级中，数学成绩排名前30%的学生信息
     ```sql
-    SELECT student_id, student_name, math_score, class_name
+    SELECT year, class_name, student_id, student_name, math_score
     FROM (
-        SELECT student_id, 
+        SELECT year, class_name, student_id,
             student_name, 
             math_score, 
-            class_name,
             PERCENT_RANK() OVER (
-                    PARTITION BY class_name 
+                    PARTITION BY year, class_name 
                     ORDER BY math_score DESC
             ) AS prk
         FROM student_achievement_info
@@ -408,24 +406,55 @@ Hive、Spark 等执行引擎一般会尝试做 TopN 优化，例如先在局部�
     WHERE prk <= 0.30
     ```
 
-3. **分组与整体**：求每个班级中，数学成绩排名前10的学生信息，以及这些学生和全校第一名的数学成绩差距
+3. **分组与整体/个体**：空`OVER()`指定全数据整体直接取值，其他情况使用`GROUP BY`分组算出个体的值，然后结合窗口函数或子查询进行进一步处理
 
-    ```sql
-    SELECT student_id, student_name, math_score, class_name, (max_math_score - math_score) AS score_diff
-    FROM (
-        SELECT student_id, 
-            student_name, 
-            math_score, 
-            class_name,
-            ROW_NUMBER() OVER (
-                    PARTITION BY class_name 
-                    ORDER BY math_score DESC
-            ) AS rk,
-            MAX(math_score) OVER () AS max_math_score
-        FROM student_achievement_info
-    ) as t
-    WHERE rk <= 10
-    ```
+    - 求每个班级中，数学成绩排名前10的学生信息，以及这些学生和全校第一名的数学成绩差距
+        > 使用窗口函数 `MAX() OVER ()` 获取全数据最高分，并结合 `ROW_NUMBER()` 过滤每个班级排名前10的学生
+
+        ```sql
+        SELECT student_id, student_name, math_score, class_name, (max_math_score - math_score) AS score_diff
+        FROM (
+            SELECT student_id, 
+                student_name, 
+                math_score, 
+                class_name,
+                ROW_NUMBER() OVER (
+                        PARTITION BY class_name 
+                        ORDER BY math_score DESC
+                ) AS rk,
+                MAX(math_score) OVER () AS max_math_score
+            FROM student_achievement_info
+        ) as t
+        WHERE rk <= 10
+        ```
+    
+    - 在学生每科成绩得分表中，选出每年，每个年级的总得分第一名和他的成绩
+        > `GROUP BY` 求每个人总分，`ROW_NUMBER()` 结合 `rn = 1` 过滤
+        ```sql
+        SELECT year,
+            class,
+            name,
+            total_score
+        FROM (
+            SELECT year,
+                class,
+                name,
+                total_score,
+                ROW_NUMBER() OVER (
+                    PARTITION BY year, class
+                    ORDER BY total_score DESC
+                ) AS rn
+            FROM (
+                SELECT year,
+                    class,
+                    name,
+                    SUM(score) AS total_score
+                FROM ods_game_dev.topn_scores
+                GROUP BY year, class, name
+            ) t1
+        ) t2
+        WHERE rn = 1
+        ```
 
 4. **Top1**: 求平均分Top1的班级名称
     - `ROW_NUMBER()` 结合 `rn = 1` 过滤
@@ -453,12 +482,34 @@ Hive、Spark 等执行引擎一般会尝试做 TopN 优化，例如先在局部�
         GROUP BY class
         ```
 
+5. **最高最低**：在学生成绩得分表中，查询每一科目成绩最高和最低分数的学生
 
-
-
-
-
-
+    ```sql
+    SELECT subject, name, score
+    FROM (
+        SELECT subject,
+            name,
+            score,
+            score_rk_desc,
+            score_rk_asc
+        FROM (
+            SELECT subject,
+                name,
+                score,
+                ROW_NUMBER() OVER (
+                    PARTITION BY subject
+                    ORDER BY score DESC
+                ) AS score_rk_desc,
+                ROW_NUMBER() OVER (
+                    PARTITION BY subject
+                    ORDER BY score ASC
+                ) AS score_rk_asc
+            FROM ods_game_dev.topn_scores
+        ) t1
+        WHERE score_rk_desc = 1
+        OR score_rk_asc = 1
+    ) t2;
+    ```
 
 ---
 ## 连续登陆问题
