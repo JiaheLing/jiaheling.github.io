@@ -24,8 +24,14 @@ title: Notes
   </header>
 
   <main class="page content-page">
-        <h1>Notes</h1>
-    <p class="page-intro">Working notes on operations research, optimization, and data engineering.</p>
+    <h1>Notes</h1>
+    <h3>Introduction 引言</h3>
+    <p class="page-intro"> At its core, a computing system can be understood through three fundamental layers: storage, computation, and applications. The same conceptual framework also applies to data systems, where data is stored, processed, and ultimately used to support applications.</p>
+    <p class="page-intro"> 从本质上看，一个计算系统可以分为三个基本层次：存储（Storage）、计算（Computation）和应用（Applications）。这一框架同样适用于数据系统（Data Systems）：数据首先被存储，随后经过计算与处理，并最终服务于各种应用。</p>
+    <p class="page-intro"> These are my working notes spanning a range of topics across data systems, analytics, and machine learning. I am currently developing a notebook that traces the end-to-end data pipeline, from data engineering and large-scale data systems to data analysis, machine learning, and downstream applications. In the future, I plan to develop a separate notebook focused on AI infrastructure. Together, these notes will serve as a foundation for understanding the key layers of modern data and AI systems: data storage, computation, modeling, and applications.</p>
+    <p class="page-intro"> 这些是我围绕数据系统、数据分析与机器学习等主题整理的工作笔记。目前，我正在编写一本涵盖端到端数据流程的笔记，从数据工程出发，逐步延伸至数据分析、机器学习以及下游应用。未来（等我有时间把AI Infra学明白），我还计划单独整理一本聚焦于AI Infrastructure的笔记。整体而言，这些笔记将作为理解现代数据与 AI 系统的基础，涵盖几个核心层面：数据存储（Data Storage）、计算（Computation）、建模（Modeling）与应用（Applications）。.</p>
+    <hr class="rule">
+    <h3>Notebooks</h3>
 
     {% assign chapters = site.pages | where_exp: "p", "p.dir contains '/notes/'" %}
     {% assign notes = chapters | group_by: "note_name" | sort: "name" %}
