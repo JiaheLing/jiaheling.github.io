@@ -16,7 +16,7 @@ title: Notes
       <a href="../index.html">Home</a>
       <a href="education.html">Education</a>
       <a href="research.html">Research</a>
-      <a href="notes.html">Notes</a>
+      <a class="active" href="notes.html">Notes</a>
       <a href="projects.html">Projects</a>
       <a href="photolab.html">PhotoLab</a>
       <span class="lang-switch"><span class="lang-current">EN</span><span class="lang-sep">/</span><a href="../chinese/index.html">CN</a></span>
@@ -24,22 +24,49 @@ title: Notes
   </header>
 
   <main class="page content-page">
-    <h1>Notes</h1>
+        <h1>Notes</h1>
     <p class="page-intro">Working notes on operations research, optimization, and data engineering.</p>
 
-    {% assign notes = site.pages | where_exp: "p", "p.dir == '/notes/'" | sort: "date" | reverse %}
+    {% assign chapters = site.pages | where_exp: "p", "p.dir contains '/notes/'" %}
+    {% assign notes = chapters | group_by: "note_name" | sort: "name" %}
 
-    <ul class="note-list">
-      {% for note in notes %}
-      <li class="note-list-item">
-        <time datetime="{{ note.date | date_to_xmlschema }}">{{ note.date | date: "%b %Y" }}</time>
-        <div>
-          <a class="note-list-title" href="{{ note.url }}">{{ note.title }}</a>
-          {% if note.summary %}<p class="note-list-summary">{{ note.summary }}</p>{% endif %}
+    {% for note in notes %}
+      <section class="note-book">
+        <h2 class="note-book-title">{{ note.name }}</h2>
+
+        {% assign parts = note.items | group_by_exp: "c", "c.dir" | sort: "name" %}
+        <div class="course-accordion">
+          {% for part in parts %}
+            {% assign ptitle = part.items.first.part_title | default: part.name %}
+            {% assign ordered = part.items | sort: "name" %}
+
+            <details class="course-group">
+              <summary>
+                <span>{{ ptitle }}</span>
+                <span class="course-count">{{ ordered.size }} chapters</span>
+              </summary>
+              <div class="course-group-body">
+                <ol class="chapter-list">
+                  {% for ch in ordered %}
+                  <li>
+                    {% if ch.status == "planned" %}
+                      <span class="chapter-planned">{{ ch.title }}</span>
+                    {% elsif ch.pdf %}
+                      <a href="{{ ch.pdf }}" target="_blank" rel="noopener">{{ ch.title }}</a>
+                      <span class="chapter-badge">PDF</span>
+                    {% else %}
+                      <a href="{{ ch.url }}">{{ ch.title }}</a>
+                    {% endif %}
+                    {% if ch.optional %}<span class="chapter-badge chapter-optional">optional</span>{% endif %}
+                  </li>
+                  {% endfor %}
+                </ol>
+              </div>
+            </details>
+          {% endfor %}
         </div>
-      </li>
-      {% endfor %}
-    </ul>
+      </section>
+    {% endfor %}
   </main>
 
   <footer class="footer">

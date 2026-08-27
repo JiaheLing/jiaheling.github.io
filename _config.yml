@@ -3,11 +3,20 @@ url: "https://jiaheling.com"
 baseurl: ""
 
 defaults:
-  - scope:
-      path: "notes"
-      type: pages
-    values:
-      layout: note
+  - scope: { path: "notes", type: pages }
+    values: { layout: note }
+
+  - scope: { path: "notes/data-engineering", type: pages }
+    values: { note_name: "Data Engineering, Analysis, and Modeling" }
+
+  - scope: { path: "notes/data-engineering/part-1-code", type: pages }
+    values: { part_title: "PART I · 代码基础" }
+
+  - scope: { path: "notes/data-engineering/part-2-modeling", type: pages }
+    values: { part_title: "PART II · 建模与架构" }
+
+  - scope: { path: "notes/data-engineering/part-3-components", type: pages }
+    values: { part_title: "PART III · 组件" }
 
 markdown: kramdown
 kramdown:

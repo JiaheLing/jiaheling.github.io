@@ -1213,3 +1213,21 @@ h1 {
 .note-body code { font-size: 0.88em; }
 .note-body table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .note-body th, .note-body td { border-bottom: 1px solid var(--line); padding: 9px 12px; text-align: left; }
+
+/* Notes */
+.note-book { margin-top: 34px; }
+.note-book-title { font-size: 20px; letter-spacing: -0.02em; margin: 0 0 14px; }
+
+.chapter-list { margin: 0; padding-left: 22px; display: grid; gap: 9px; }
+.chapter-list li::marker { color: var(--muted); font-size: 13px; }
+.chapter-list a { color: var(--text); text-decoration: none; }
+.chapter-list a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.chapter-planned { color: var(--muted); }
+
+.chapter-badge {
+  margin-left: 8px; padding: 1px 8px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--panel);
+  color: var(--muted); font-size: 11px; letter-spacing: 0.04em;
+}
+.chapter-optional { font-style: italic; }
