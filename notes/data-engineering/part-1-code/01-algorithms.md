@@ -111,7 +111,7 @@ public void push(int x) {
 }
 ```
 
-> 为什么不能这样写 `for`？
+> 为什么不能这样写 `for`？**问题**：`origin.poll();` 会不断删除元素，因此 `origin.size()` 也会不断变小，导致循环提前结束，但元素没有全部移动。因此，当循环过程中集合大小会发生变化时，更适合使用`while` 循环。
 
 ```java
 for (int i = 0; i < origin.size(); i++) {
@@ -119,9 +119,6 @@ for (int i = 0; i < origin.size(); i++) {
 }
 ```
 
-    问题：`origin.poll();` 会不断删除元素，因此 `origin.size()` 也会不断变小，导致循环提前结束，但元素没有全部移动。
-    
-    因此，当循环过程中集合大小会发生变化时，更适合使用`while` 循环。
 
 #### 复杂度
 
@@ -192,6 +189,7 @@ peek() -> origin.peek()
 * `pop()`：O(1)
 * `peek()`：O(1)
 * `empty()`：O(1)
+
 
 
 
