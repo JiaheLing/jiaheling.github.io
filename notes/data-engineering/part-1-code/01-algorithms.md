@@ -18,7 +18,7 @@ title: "算法基础"
 
 ### 用队列实现栈 (LeetCode 225)
 
-#### Java 中的队列 Queue
+#### Java 中的队列Queue（使用双端队列Deque代替）
 
 队列（Queue）是一种 **先进先出（FIFO）** 的数据结构。
 
@@ -129,7 +129,7 @@ for (int i = 0; i < origin.size(); i++) {
 
 ### 用栈实现队列 (LeetCode 232)
 
-#### Java 中的栈
+#### Java 中的栈（使用双端队列Deque代替）
 
 栈（Stack）是一种 **后进先出（LIFO）** 的数据结构。
 
@@ -369,6 +369,113 @@ if (rear < front ...)
 
 ```java
 (index + 1) % capacity
+```
+
+### 滑动窗口最大值（LeetCode 239）
+
+
+#### Java 中的双端队列 Deque
+
+> 双端队列也可以使用Stack和Queue的指令：
+
+```java
+// Stack
+deque.push(1);   // 从队头加入
+deque.pop();     // 从队头删除
+deque.peek();    // 查看队头
+
+// Queue
+deque.offer(1);  // 从队尾加入
+deque.poll();    // 从队头删除
+deque.peek();    // 查看队头
+```
+
+双端队列操作：
+
+```java
+import java.util.Deque;
+import java.util.ArrayDeque;
+
+Deque<Integer> deque = new ArrayDeque<>();
+
+deque.offerFirst(1);   // 从队头加入
+deque.offerLast(2);    // 从队尾加入
+deque.offer(3);        // 从队尾加入
+
+deque.pollFirst();     // 删除并返回队头
+deque.pollLast();      // 删除并返回队尾
+
+deque.peekFirst();     // 查看队头，不删除
+deque.peekLast();      // 查看队尾，不删除
+
+deque.isEmpty();       // 是否为空
+deque.size();          // 元素个数
+```
+
+#### 解法
+
+##### 暴力解法 (O(nk))
+
+```java
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int length = nums.length - k + 1;
+        int[] ans = new int[length];
+        
+        for (int i = 0; i < length; i++) {
+            double local_max = Double.NEGATIVE_INFINITY;
+            // 注意这里是 j < i + k, 而不是j < length
+            for (int j = i; j < i + k; j++) {
+                if (nums[j] > local_max) {
+                    local_max = nums[j];
+                }
+            }
+            ans[i] = (int) local_max;
+        }
+
+        return ans;
+    }
+}
+```
+
+##### 双端队列解法 (O(n))
+
+```java
+import java.util.Deque;
+import java.util.ArrayDeque;
+
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int[] ans = new int[nums.length - k + 1];
+        Deque<Integer> deque = new ArrayDeque<>();
+
+        int index = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+
+            // 1. 删除已经离开窗口的元素
+            if (!deque.isEmpty() && deque.peekFirst() <= i - k) {
+                deque.pollFirst();
+            }
+
+            // 2. 保持队列单调递减
+            while (!deque.isEmpty()
+                    && nums[deque.peekLast()] < nums[i]) {
+                deque.pollLast();
+            }
+
+            // 保存下标
+            deque.offerLast(i);
+
+            // 3. 窗口形成后，队头就是最大值
+            if (i >= k - 1) {
+                ans[index++] = nums[deque.peekFirst()];
+            }
+        }
+
+        return ans;
+    }
+}
 ```
 
 ---
