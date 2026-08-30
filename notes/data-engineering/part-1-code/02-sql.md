@@ -517,9 +517,315 @@ Hive、Spark 等执行引擎一般会尝试做 TopN 优化，例如先在局部�
 
 ### 连续登陆问题概述
 
+连续登录问题的核心在于日期连续，一般题目中出现 "求XXX连续N天登录" 这种字眼时，往往就是一道连续登陆日期的题目。
+
+通常需要注意以下三点：
+
+- 日期必须连续（比如12.5、12.6、12.7 登录，就是连续 3 天）
+
+- 每天只保留一条登录记录（比如 12.5上午、12.5 下午、12.6 登录，只能算连续 2 天）
+
+- 不同连续区间需要分组
+   * 如：12.1、12.2、12.3、12.5、12.6、12.7
+   * 应拆成两组：`12.1~12.3`、`12.5~12.7`
+   * 即 **两次连续 3 天**，而不是连续 6 天。
 
 
----
+### 常用函数
+
+#### `lag()`
+
+获取当前行的**上一条记录**。
+
+```sql
+lag(dt, 1) over (
+    partition by user_id
+    order by dt
+)
+```
+
+含义：
+
+* `partition by user_id`：每个用户单独计算
+* `order by dt`：按登录日期排序
+* `lag(dt, 1)`：获取上一次登录日期
+
+#### `datediff()`
+
+计算两个日期之间相差的天数。例如：`datediff('2024-12-06', '2024-12-05') = 1`
+
+```sql
+datediff(dt, last_dt)
+```
+
+因此：
+
+```text
+datediff = 1 -> 日期连续
+datediff > 1 -> 日期中断
+```
+
+#### `date_sub()`
+
+将日期向前减指定天数。例如：`12-01 - 1天 = 11-30`
+
+```sql
+date_sub(dt, rn)
+```
+
+连续日期的 `dt` 和 `rn` 都同时 `+1`，所以：**连续的一组日期，其 `date_sub(dt, rn)` 结果相同。**
+
+因此可以用它构造连续区间的分组标识 `sub_dt`。
+
+### 常规解法
+
+```sql
+SELECT
+    user_id,
+    sub_dt,
+    COUNT(*) AS continuous_days
+FROM (
+    SELECT 
+        user_id,
+        dt,
+        DATE_SUB(
+            dt,
+            ROW_NUMBER() OVER (
+                PARTITION BY user_id
+                ORDER BY dt
+            )
+        ) AS sub_dt
+    FROM (
+        SELECT DISTINCT
+            user_id,
+            dt
+        FROM user_login_table
+    ) t0
+) t1
+GROUP BY user_id, sub_dt
+HAVING COUNT(*) >= 3;
+```
+
+1. **去重**：连续登录统计的是**天数**，同一天登录多次只能算一天。因此先保证：一个 user_id + dt 只有一条记录
+
+```sql
+SELECT DISTINCT
+    user_id,
+    dt
+FROM user_login_table
+```
+
+2. `ROW_NUMBER()` **开窗排序**：对每个用户的登录日期排序：
+
+```sql
+ROW_NUMBER() OVER (
+    PARTITION BY user_id
+    ORDER BY dt
+) AS rn
+```
+
+例如：
+
+| user_id  |   dt    | rn |
+| ---------| ------- | -: |
+| 1 | 12-01 |  1 |
+| 1 | 12-02 |  2 |
+| 1 | 12-03 |  3 |
+| 1 | 12-05 |  4 |
+| 1 | 12-06 |  5 |
+
+
+3. 构造日期差标识
+
+```sql
+DATE_SUB(dt, rn) AS sub_dt
+```
+
+得到：
+
+| user_id | dt    | rn | sub_dt |
+|---------|-------|----|--------|
+| 1 | 12-01 |  1 | 11-30  |
+| 1 | 12-02 |  2 | 11-30  |
+| 1 | 12-03 |  3 | 11-30  |
+| 1 | 12-05 |  4 | 12-01  |
+| 1 | 12-06 |  5 | 12-01  |
+
+
+4. `GROUP BY` 聚合统计
+
+```sql
+GROUP BY user_id, sub_dt
+```
+
+分组：
+
+```sql
+SELECT
+    user_id,
+    sub_dt,
+    count(*) as continuous_days
+FROM t
+GROUP BY
+    user_id,
+    sub_dt;
+```
+
+每个分组就是一段连续登录区间，`count(*)` 即该段的**连续登录天数**。
+
+
+### 其他解法
+
+```sql
+SELECT
+    user_id,
+    group_id,
+    COUNT(*) AS continuous_days
+FROM (
+    SELECT
+        user_id,
+        dt,
+        SUM(tmp_lab) OVER (
+            PARTITION BY user_id
+            ORDER BY dt
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS group_id
+    FROM (
+        SELECT
+            user_id,
+            dt,
+            CASE
+                WHEN login_date_diff = 1 THEN 0
+                ELSE 1
+            END AS tmp_lab
+        FROM (
+            SELECT
+                user_id,
+                dt,
+                DATEDIFF(
+                    dt,
+                    LAG(dt, 1) OVER (
+                        PARTITION BY user_id
+                        ORDER BY dt
+                    )
+                ) AS login_date_diff
+            FROM (
+                SELECT DISTINCT
+                    user_id,
+                    dt
+                FROM user_login_table
+            ) t0
+        ) t1
+    ) t2
+) t3
+GROUP BY user_id, group_id
+HAVING COUNT(*) >= 3;
+```
+
+1. **去重**：同一天登录多次只能算一天，因此先保证一个 `user_id + dt` 只有一条记录。
+
+```sql
+SELECT DISTINCT
+    user_id,
+    dt
+FROM user_login_table
+```
+
+2. `LAG()` + `DATEDIFF()` **计算相邻登录日期差**：先通过 `LAG()` 获取用户上一次登录日期，再通过 `DATEDIFF()` 计算当前日期与上一次登录日期相差多少天。
+
+```sql
+DATEDIFF(
+    dt,
+    LAG(dt, 1) OVER (
+        PARTITION BY user_id
+        ORDER BY dt
+    )
+) AS login_date_diff
+```
+
+例如：
+
+| user_id | dt    | last_dt | login_date_diff |
+| ------- | ----- | ------- | --------------: |
+| 1       | 12-01 | NULL    |            NULL |
+| 1       | 12-02 | 12-01   |               1 |
+| 1       | 12-03 | 12-02   |               1 |
+| 1       | 12-05 | 12-03   |               2 |
+| 1       | 12-06 | 12-05   |               1 |
+
+其中：
+
+```text
+login_date_diff = 1 -> 和上一条记录连续
+login_date_diff != 1 -> 连续中断
+```
+
+3. **构造中断标识**：通过 `CASE WHEN` 判断当前记录是否开启了一段新的连续登录区间。
+
+```sql
+CASE
+    WHEN login_date_diff = 1 THEN 0
+    ELSE 1
+END AS tmp_lab
+```
+
+得到：
+
+| user_id | dt    | login_date_diff | tmp_lab |
+| ------- | ----- | --------------: | ------: |
+| 1       | 12-01 |            NULL |       1 |
+| 1       | 12-02 |               1 |       0 |
+| 1       | 12-03 |               1 |       0 |
+| 1       | 12-05 |               2 |       1 |
+| 1       | 12-06 |               1 |       0 |
+
+其中：
+
+```text
+tmp_lab = 0 -> 延续上一段
+tmp_lab = 1 -> 开启新的一段
+```
+
+4. `SUM()` **累计构造分组标识**：对 `tmp_lab` 进行累计求和，每遇到一次中断，分组编号就 `+1`。
+
+```sql
+SUM(tmp_lab) OVER (
+    PARTITION BY user_id
+    ORDER BY dt
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+) AS group_id
+```
+
+得到：
+
+| user_id | dt    | tmp_lab | group_id |
+| ------- | ----- | ------: | -------: |
+| 1       | 12-01 |       1 |        1 |
+| 1       | 12-02 |       0 |        1 |
+| 1       | 12-03 |       0 |        1 |
+| 1       | 12-05 |       1 |        2 |
+| 1       | 12-06 |       0 |        2 |
+
+因此：
+
+```text
+group_id = 1 -> 12-01 ~ 12-03
+group_id = 2 -> 12-05 ~ 12-06
+```
+
+5. `GROUP BY` **聚合统计**
+
+```sql
+GROUP BY user_id, group_id
+HAVING COUNT(*) >= 3
+```
+
+每个 `user_id + group_id` 就是一段连续登录区间，`COUNT(*)` 即该段的**连续登录天数**。
+
+### 间隔连续登陆
+
+
+
 ## 4. 行转列/列转行问题
 
 ### 行转列问题概述
