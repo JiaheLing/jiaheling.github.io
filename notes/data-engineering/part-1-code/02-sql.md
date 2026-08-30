@@ -822,7 +822,180 @@ HAVING COUNT(*) >= 3
 
 每个 `user_id + group_id` 就是一段连续登录区间，`COUNT(*)` 即该段的**连续登录天数**。
 
-### 间隔连续登陆
+### 间隔连续登陆（其他解法plus）
+
+#### 问题描述
+
+设置一个间隔天数 `k`，如果用户在 `k` 天内登录，则视为连续登录（例子：假设用户在上次登录后2天内登录就视作连续登陆，一个用户在 12.1，12.3，12.5，12.6 共4天都登录了游戏，则视为连续 6 天登录）。
+
+#### 解决方案
+
+```sql
+SELECT
+    user_id,
+    sum_tmp_lab,
+    DATEDIFF(MAX(dt), MIN(dt)) + 1 AS continuous_days
+FROM (
+    SELECT
+        user_id,
+        dt,
+        SUM(tmp_lab) OVER (
+            PARTITION BY user_id
+            ORDER BY dt
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS sum_tmp_lab
+    FROM (
+        SELECT
+            user_id,
+            dt,
+            CASE
+                WHEN login_date_diff <= 2 THEN 0
+                ELSE 1
+            END AS tmp_lab
+        FROM (
+            SELECT
+                user_id,
+                dt,
+                DATEDIFF(
+                    dt,
+                    LAG(dt, 1) OVER (
+                        PARTITION BY user_id
+                        ORDER BY dt
+                    )
+                ) AS login_date_diff
+            FROM (
+                SELECT DISTINCT
+                    user_id,
+                    dt
+                FROM user_login_table
+            ) t0
+        ) t1
+    ) t2
+) t3
+GROUP BY user_id, sum_tmp_lab
+HAVING DATEDIFF(MAX(dt), MIN(dt)) + 1 >= 6;
+```
+
+1. **去重**：保证一个用户一天只有一条登录记录。
+
+```sql
+SELECT DISTINCT
+    user_id,
+    dt
+FROM user_login_table
+```
+
+2. `LAG() + DATEDIFF()` **计算相邻两次登录的日期差**。
+
+```sql
+DATEDIFF(
+    dt,
+    LAG(dt, 1) OVER (
+        PARTITION BY user_id
+        ORDER BY dt
+    )
+) AS login_date_diff
+```
+
+例如：
+
+| dt    | 上次登录  | login_date_diff |
+| ----- | ----- | --------------: |
+| 12-01 | NULL  |            NULL |
+| 12-03 | 12-01 |               2 |
+| 12-05 | 12-03 |               2 |
+| 12-06 | 12-05 |               1 |
+
+3. `CASE WHEN` **判断是否超过允许的间隔**。
+
+普通连续登录：
+
+```sql
+CASE
+    WHEN login_date_diff = 1 THEN 0
+    ELSE 1
+END
+```
+
+允许间隔一天：
+
+```sql
+CASE
+    WHEN login_date_diff <= 2 THEN 0
+    ELSE 1
+END AS tmp_lab
+```
+
+也就是：
+
+```text
+日期差 <= 2 -> 仍然连续 -> 0
+日期差 > 2  -> 连续中断 -> 1
+```
+
+4. `SUM()` **累计生成连续区间编号**。
+
+```sql
+SUM(tmp_lab) OVER (
+    PARTITION BY user_id
+    ORDER BY dt
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+) AS sum_tmp_lab
+```
+
+例如：
+
+| dt    | login_date_diff | tmp_lab | sum_tmp_lab |
+| ----- | --------------: | ------: | ----------: |
+| 12-01 |            NULL |       1 |           1 |
+| 12-03 |               2 |       0 |           1 |
+| 12-05 |               2 |       0 |           1 |
+| 12-06 |               1 |       0 |           1 |
+
+因此这 4 条记录属于同一个连续区间。
+
+5. `GROUP BY` **聚合计算连续天数**。
+
+```sql
+GROUP BY user_id, sum_tmp_lab
+```
+
+普通连续登录可以直接：
+
+```sql
+COUNT(*)
+```
+
+但是间隔连续登录**不能使用 `COUNT(*)`**。
+
+因为：
+
+```text
+登录日期：12-01、12-03、12-05、12-06
+
+COUNT(*) = 4
+```
+
+但题目认为这一段其实算作连续登陆6天；所以需要计算日期跨度（12-06 - 12-01 + 1 = 6天）：
+
+```sql
+DATEDIFF(MAX(dt), MIN(dt)) + 1
+```
+
+因此间隔连续登录的核心区别是：
+
+```text
+普通连续登录：
+login_date_diff = 1
+COUNT(*)
+
+间隔一天也连续：
+login_date_diff <= 2
+DATEDIFF(MAX(dt), MIN(dt)) + 1
+```
+
+### 题型分类
+
 
 
 
