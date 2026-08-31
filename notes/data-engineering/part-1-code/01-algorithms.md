@@ -502,7 +502,7 @@ class Solution {
 ---
 ## 回溯与贪心
 
-### 复原IP地址（LeetCode 93）
+### [回溯] 复原IP地址（LeetCode 93）
 
 #### String
 
@@ -664,7 +664,119 @@ class Solution {
 ```
 
 
-### 非递减子序列
+### [回溯] 非递减子序列（LeetCode 491）
+
+
+
+
+
+### [贪心] 发饼干（LeetCode 455）
+
+#### 数组排序
+
+```java
+import java.util.Arrays;
+int[] nums = {3, 1, 4, 2};
+Arrays.sort(nums); // 直接修改原数组
+```
+
+#### 解法
+
+**思路：** 排序 + 双指针。用**最小但能满足当前孩子的饼干**，避免浪费大饼干。
+
+
+```java
+import java.util.Arrays;
+
+class Solution {
+    public int findContentChildren(int[] g, int[] s) {
+        Arrays.sort(g);
+        Arrays.sort(s);
+
+        int i = 0; // child
+        int j = 0; // cookie
+        int count = 0;
+
+        while (i < g.length && j < s.length) {
+            if (s[j] >= g[i]) {
+                count++;
+                i++;
+                j++;
+            } else {
+                j++;
+            }
+        }
+
+        return count;
+    }
+}
+```
+
+**注意：** 不能双重 loop（比如for loop嵌套） 直接 `count++`，否则会重复使用孩子/饼干
+
+#### 复杂度
+
+* 时间：`O(n log n + m log m)`
+* 空间：`O(1)`（不考虑排序内部空间）
+
+
+
+### [贪心] 柠檬水找零（LeetCode 860）
+
+#### 解法
+
+**思路：** 只需要记录 `$5` 和 `$10` 的数量。收到 `$20` 时优先找 `$10 + $5`，尽量保留更多 `$5`。
+
+```java
+class Solution {
+    public boolean lemonadeChange(int[] bills) {
+        int five = 0;
+        int ten = 0;
+
+        for (int bill : bills) {
+            switch (bill) {
+                case 5:
+                    five++;
+                    break;
+
+                case 10:
+                    if (five == 0) return false;
+                    five--;
+                    ten++;
+                    break;
+
+                case 20:
+                    if (ten > 0 && five > 0) {
+                        ten--;
+                        five--;
+                    } else if (five >= 3) {
+                        five -= 3;
+                    } else {
+                        return false;
+                    }
+                    break;
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+**注意：**
+
+* `$20` 找零优先 `$10 + $5`，否则 `$5 + $5 + $5`
+* `$5` 最重要，因为 `$10`、`$20` 找零都可能需要
+* 不需要记录 `$20`，因为不会拿它找零
+* **`switch case` 记得写 `break`，否则会继续执行下一个 `case`**
+
+#### 复杂度
+
+* 时间：`O(n)`
+* 空间：`O(1)`
+
+
+
 
 
 

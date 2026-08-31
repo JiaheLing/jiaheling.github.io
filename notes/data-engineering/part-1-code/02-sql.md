@@ -4,6 +4,8 @@ title: "SQL基础"
 
 ## 目录
 
+_本笔记默认掌握基础的SQL语法，仅讨论SQL常见问题的算法逻辑，如果需要详细学习SQL，请查看[Hive]()或者[Spark]()部分的笔记。_
+
 - [1. SQL顺序](#1-sql顺序)
   - [语法顺序](#语法顺序)
   - [逻辑执行顺序](#逻辑执行顺序)
@@ -2609,7 +2611,474 @@ FROM products;
 ---
 ## 9. JSON字符串与解析
 
+### JSON介绍
 
+#### 什么是 JSON
+
+JSON（**JavaScript Object Notation**）是一种轻量级的数据交换格式，本质上是用**文本形式组织和表示结构化数据**，方便数据存储、传输和解析。
+
+数仓中常见于：
+
+* **埋点 / 日志数据**：记录用户 ID、操作时间、事件类型、页面、按钮等行为信息。
+* **扩展业务字段**：把不同业务特有的维度、指标放进公共 JSON 字段，避免频繁给大表新增字段。
+* **配置、API 数据**：JSON 对象适合描述一个实体或配置。
+* **列表数据**：JSON 数组适合保存商品列表、文章列表、收藏列表等。
+
+#### JSON 的两种基本形式
+
+JSON 主要分为 **JSON Object（对象）** 和 **JSON Array（数组）**。
+
+* **JSON Object：`{}`**
+
+    由多个 `key : value` 组成，通常描述一个对象：
+
+    ```json
+    {
+        "name": "Alice",
+        "age": 30,
+        "city": "Beijing",
+        "isStudent": false,
+        "hobbies": ["reading", "swimming"]
+    }
+    ```
+
+    可以理解为：
+
+    ```text
+    {
+        属性1 : 值1,
+        属性2 : 值2,
+        属性3 : 值3
+    }
+    ```
+
+* **JSON Array：`[]`**
+
+    表示一组数据，通常包含多个 JSON Object：
+
+    ```json
+    [
+    {"name":"Alice","age":30},
+    {"name":"Bob","age":28},
+    {"name":"Charlie","age":32}
+    ]
+    ```
+
+    可以理解为：
+
+    ```text
+    [
+        JSON对象1,
+        JSON对象2,
+        JSON对象3
+    ]
+    ```
+
+* JSON 嵌套
+    - JSON 套 JSON
+    - JSON 套 ARRAY
+    - ARRAY 套 JSON
+    - ARRAY 套 ARRAY
+    - 其他复杂嵌套
+
+
+#### JSON 字符串与 SQL 数据类型
+
+SQL 表中看到 `'{"name":"Alice","age":30}'` 这样的字段，通常是 **JSON 字符串**，它的类型是 `STRING`。
+
+要进一步使用数组、结构体等操作，需要先解析：`JSON STRING` -> 解析 -> `STRUCT` / `ARRAY` / `MAP`。
+
+解析之后，不同数据类型的访问方式不同：
+
+| 数据类型     | 常见操作              |
+| -------- | ----------------- |
+| `STRUCT` | `data.name`       |
+| `MAP`    | `data['name']`    |
+| `ARRAY`  | `explode(data)` 等 |
+
+
+### JSON函数
+
+#### 1. `GET_JSON_OBJECT()`
+
+用于**根据 JSON 路径，从 JSON 字符串中提取指定元素**。适合提取少量字段，尤其是嵌套字段。
+
+##### 语法
+
+```sql
+get_json_object(json_string, path)
+```
+
+* `json_string`：待解析 JSON 字符串
+* `path`：JSON 路径
+* `$`：表示 JSON 根节点
+* `$.a.b`：表示依次进入 `a -> b`
+
+例如：
+
+```json
+{
+  "name": "Alice",
+  "scores": {
+    "math": 85
+  }
+}
+```
+
+- 取 `name`：
+
+    ```sql
+    get_json_object(student_info, '$.name')
+    ```
+
+- 取 `math`：
+
+    ```sql
+    get_json_object(student_info, '$.scores.math')
+    ```
+
+##### 常见用法
+
+* **提取一个普通字段**
+
+    ```sql
+    get_json_object(json_col, '$.name')
+    ```
+
+* **提取嵌套字段**
+
+    ```sql
+    get_json_object(json_col, '$.user.name')
+    ```
+
+* **提取数组中的指定元素**
+
+    ```sql
+    get_json_object(name, '$[0]')
+    ```
+
+    即先取 JSON 数组的第一个对象，再进行后续解析。
+
+##### 注意点
+
+* 一次调用主要提取**一个元素**。
+* 提取多个字段需要调用多次：
+
+    ```sql
+    SELECT
+        get_json_object(info, '$.name'),
+        get_json_object(info, '$.age'),
+        get_json_object(info, '$.city')
+    FROM t;
+    ```
+
+    这样会对同一 JSON 字符串重复解析，因此字段较多时性能可能较差。资料特别强调了这一点。
+
+
+#### 2. `JSON_TUPLE()`
+
+用于**一次从 JSON 字符串中提取多个字段**，适合多个同层字段的解析。相比多次调用 `get_json_object()`，只需要解析一次 JSON，效率通常更高。
+
+##### 语法
+
+```sql
+json_tuple(
+    json_string,
+    key1,
+    key2,
+    key3,
+    ...
+)
+```
+
+注意：key **不需要写 `$.`**。
+
+例如：
+
+```json
+{
+  "name":"Alice",
+  "math_score":85,
+  "english_score":90
+}
+```
+
+```sql
+SELECT
+    json_tuple(
+        student_info,
+        'name',
+        'math_score',
+        'english_score'
+    ) AS (name, math_score, english_score)
+FROM student;
+```
+
+结果：
+
+| name  | math_score | english_score |
+| ----- | ---------: | ------------: |
+| Alice |         85 |            90 |
+
+##### 常见用法
+
+* **一次解析多个同层字段**
+
+    ```sql
+    json_tuple(
+        json_col,
+        'name',
+        'age',
+        'city'
+    )
+    ```
+
+* **嵌套 JSON 分层解析**
+
+    例如：
+
+    ```json
+    {
+    "name":"Alice",
+    "scores":{
+        "math":85,
+        "english":90
+    }
+    }
+    ```
+
+    可以分两层解析：先取 name、scores，再解析 scores
+
+    ```sql
+    SELECT
+        name,
+        math_score,
+        english_score
+    FROM student_data s
+
+    LATERAL VIEW json_tuple(
+        s.student_info,
+        'name',
+        'scores'
+    ) t1 AS name, scores_json
+
+    LATERAL VIEW json_tuple(
+        scores_json,
+        'math',
+        'english'
+    ) t2 AS math_score, english_score;
+    ```
+
+原表：
+
+| student_info                                         |
+| ---------------------------------------------------- |
+| `{"name":"Alice","scores":{"math":85,"english":90}}` |
+
+第一层解析后：
+
+| name  | scores_json                |
+| ----- | -------------------------- |
+| Alice | `{"math":85,"english":90}` |
+
+第二层解析后：
+
+| name  | math_score | english_score |
+| ----- | ---------: | ------------: |
+| Alice |         85 |            90 |
+
+
+#### 3. `FROM_JSON()`
+
+`from_json()` 用于**把整个 JSON STRING 映射成 STRUCT / ARRAY / MAP 等结构化类型**。
+
+当 JSON 很复杂、嵌套层级较多，或者需要继续使用 `explode()`、数组函数、MAP 操作时，使用 `from_json()` 更合适。资料将它总结为对复杂 JSON **“化繁为简”**。
+
+##### 函数结构
+
+```sql
+from_json(json_str, schema)
+```
+
+* `json_str`：JSON 字符串
+* `schema`：JSON 对应的目标结构，需要描述字段名和数据类型
+* 返回：对应的 `STRUCT / ARRAY / MAP` 等结构化数据
+
+##### Schema
+
+常见映射：
+
+| JSON 结构   | Schema                                                 |
+| --------- | ------------------------------------------------------ |
+| 普通对象      | `struct<name:string,age:int>`                          |
+| 嵌套对象      | `struct<user:struct<id:int,name:string>,score:double>` |
+| JSON 数组   | `array<struct<course:string,score:int>>`               |
+| JSON 键值结构 | `map<string,int>`                                      |
+
+例如：
+
+```json
+{
+  "name":"Alice",
+  "age":30
+}
+```
+
+```sql
+SELECT 
+    from_json(
+        json_str, 
+        'struct<name:string,age:int>' 
+    ) AS json_data 
+FROM t;
+```
+
+得到：`STRUCT<name:string, age:int>`，之后可以`json_data.name`、`json_data.age` 直接访问。
+
+
+##### 常见用法
+
+* **复杂 JSON 一次性结构化**
+
+    ```sql
+    from_json(
+        json_col,
+        'struct<
+            name:string,
+            scores:struct<math:int,english:int>
+        >'
+    )
+    ```
+    
+    通过 struct_name.field_name 访问嵌套字段。
+
+* **JSON Array -> ARRAY -> `explode()`**
+
+    ```json
+    [
+        {"course":"math","score":95},
+        {"course":"english","score":90}
+    ]
+    ```
+
+    ```sql
+    LATERAL VIEW explode(
+        from_json(
+            json_str,
+            'array<struct<course:string,score:int>>'
+        )
+    ) tmp AS course_info
+    ```
+
+* **解析为 MAP**
+
+    ```sql
+    from_json(
+        json_str,
+        'array<map<string,string>>'
+    )
+    ```
+
+    炸裂后某个元素 `a` 是 MAP，则：
+
+    ```sql
+    a['id']
+    a['name']
+    ```
+
+##### 注意点
+
+- `schema` 需要与 JSON 的**结构和数据类型匹配**：
+- Mapping
+    - JSON 对象 -> STRUCT
+    - JSON 数组 -> ARRAY
+    - 键值结构 -> MAP
+
+#### 4. `LATERAL VIEW JSON_TUPLE`
+
+用于在保留原表字段的同时，**把 JSON 中多个字段解析成独立列**。
+
+##### 语法
+
+```sql
+SELECT
+    ...
+FROM table_name LATERAL VIEW json_tuple(
+    json_col,
+    'key1',
+    'key2'
+) tmp AS col1, col2;
+```
+
+例如原表：
+
+| id | user_info                   |
+| -: | --------------------------- |
+|  1 | `{"name":"Alice","age":30}` |
+
+SQL：
+
+```sql
+SELECT
+    id,
+    name,
+    age
+FROM user LATERAL VIEW json_tuple(
+    user_info,
+    'name',
+    'age'
+) tmp AS name, age;
+```
+
+结果：
+
+| id | name  | age |
+| -: | ----- | --: |
+|  1 | Alice |  30 |
+
+
+> 注意它和 `explode()` 的作用不同：JSON的LATERAL VIEW 主要是**把 JSON 中的多个 key 解析成多列**，而 `explode()` 是**把 ARRAY / MAP 拆成多行**。
+
+
+#### 5. `TO_JSON()`（
+
+`to_json()` 和 `from_json()` 方向相反，用于**把结构化数据转换成 JSON 字符串**；常和 `STRUCT` / `ARRAY` / `MAP` 等类型配合使用。
+
+
+##### 语法
+
+```sql
+to_json(struct_or_array_or_map)
+```
+
+##### 常见用法
+
+| id | name | age |
+| -: | ---- | --: |
+|  1 | 张三   |  20 |
+
+可以先构造 MAP：
+
+```sql
+to_json(
+    map(
+        'id', CAST(id AS STRING),
+        'name', CAST(name AS STRING),
+        'age', CAST(age AS STRING)
+    )
+)
+```
+
+得到类似：
+
+```json
+{"id":"1","name":"张三","age":"20"}
+```
+
+##### 注意点
+
+* 所有 key 需要保持同一数据类型
+* 所有 value 也需要保持同一数据类型
 
 ---
 
