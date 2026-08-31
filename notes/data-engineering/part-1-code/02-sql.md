@@ -996,12 +996,1003 @@ DATEDIFF(MAX(dt), MIN(dt)) + 1
 
 ### 题型分类
 
+TBD
 
 
 
 ## 4. 行转列/列转行问题
 
 ### 行转列问题概述
+
+行转列和列转行的核心都是改变数据的组织形式 / 粒度。 **行转列**通常是把原来分散在多行中的同一主体数据进行**聚合**，整理到更少的行、更多的列或一个聚合字段中；**列转行**则相反，把原来保存在一行中的一个或多个字段**拆开**，生成多条明细记录。
+
+> 行转列通常涉及 GROUP BY + 聚合操作，而列转行通常涉及把字段“炸开”的操作。
+
+### 常用函数（列转行）
+
+#### 1. `explode()`
+
+`explode()` 是最常用的**炸裂函数 / UDTF（User-Defined Table-Generating Function，表生成函数）**之一。UDTF 的特点是可以让原表中的**一行数据生成多行数据**。对于 `ARRAY`，`explode()` 会把数组中的每个元素展开成一行；对于 `MAP`，会把每个键值对展开成 `key + value` 两列。`posexplode()`和 `explode(array)` 类似，但会额外返回数组元素的位置索引，索引从 `0` 开始。
+
+**例子**
+
+| id | name | hobbies                    |
+| -: | ---- | -------------------------- |
+|  1 | Amy  | `['game','swim']`          |
+|  2 | Bob  | `['run']`                  |
+|  3 | Jack | `['movie','game','music']` |
+
+- `explode(ARRAY)`：如果希望把“一个人的多个兴趣”拆成真正的明细记录，可以对 `hobbies` 使用 `explode()`：
+
+    ```sql
+    SELECT
+        id,
+        name,
+        hobby
+    FROM person
+    LATERAL VIEW explode(hobbies) tmp AS hobby;
+    ```
+
+    结果：
+
+    | id | name | hobby |
+    | -: | ---- | ----- |
+    |  1 | Amy  | game  |
+    |  1 | Amy  | swim  |
+    |  2 | Bob  | run   |
+    |  3 | Jack | movie |
+    |  3 | Jack | game  |
+    |  3 | Jack | music |
+
+    这里真正负责产生多行的是 `explode(hobbies)`：Amy 原本只有 **1 行**，但 `hobbies` 中有 2 个元素，因此炸裂后变成 **2 行**；Jack 的数组有 3 个元素，因此变成 **3 行**。`LATERAL VIEW` 只是把这些炸出来的 `hobby` 重新和当前 `person` 行的 `id / name` 组合起来，具体作用后面单独讲。
+
+     `explode()` 并不是为了“做一道列转行题”，而是为了**降低数据粒度，把集合中的元素变成可以继续 `WHERE / JOIN / GROUP BY` 的明细记录**。用户标签、商品列表、日志事件数组、角色列表、设备列表等都属于同一种处理思想。
+
+- `explode(MAP)`：MAP（数据类型）中的一个元素本身包含 `key + value`，所以会一次生成两列。(`SELECT EXPLODE(MAP("a", 1, "b", 2, "c", 3)) as (key, value);`)
+
+    | user_id | name | attrs                  |
+    | ------: | ---- | ---------------------- |
+    |       1 | Amy  | `{'level':10,'vip':1}` |
+    |       2 | Bob  | `{'level':6,'vip':0}`  |
+
+    执行：
+
+    ```sql
+    SELECT
+        user_id,
+        name,
+        attr_name,
+        attr_value
+    FROM user_info
+    LATERAL VIEW explode(attrs) tmp AS attr_name, attr_value;
+    ```
+
+    结果：
+
+    | user_id | name | attr_name | attr_value |
+    | ------: | ---- | --------- | ---------: |
+    |       1 | Amy  | level     |         10 |
+    |       1 | Amy  | vip       |          1 |
+    |       2 | Bob  | level     |          6 |
+    |       2 | Bob  | vip       |          0 |
+
+    所以数组和 MAP 的区别可以直接记成：**`explode(ARRAY)` 每个元素产生 1 个输出字段；`explode(MAP)` 每个键值对产生 2 个输出字段，即 `key + value`。** 原笔记中的示例也是 `explode(array())` 返回一列，而 `explode(map())` 返回两列。
+
+- `posexplode()`：`explode()` + position，除了把数组元素拆成多行，还保留元素原本在数组中的索引，索引从 `0` 开始。
+
+    | user_id | events                    |
+    | ------: | ------------------------- |
+    |       1 | `['login','click','pay']` |
+    |       2 | `['login','logout']`      |
+
+    执行：
+
+    ```sql
+    SELECT
+        user_id,
+        pos,
+        event
+    FROM user_event
+    LATERAL VIEW posexplode(events) tmp AS pos, event;
+    ```
+
+    结果：
+
+    | user_id | pos | event  |
+    | ------: | --: | ------ |
+    |       1 |   0 | login  |
+    |       1 |   1 | click  |
+    |       1 |   2 | pay    |
+    |       2 |   0 | login  |
+    |       2 |   1 | logout |
+
+    如果只用 `explode(events)`，最终只能知道用户 1 有 `login / click / pay` 三个元素；使用 `posexplode(events)` 后，还可以知道 `login` 原来是第 0 个元素、`click` 是第 1 个、`pay` 是第 2 个。因此只关心“元素是什么”时用 `explode()`，还需要保留**数组原始位置**时使用 `posexplode()`。这与原笔记中 `posexplode(array())` 同时返回 `pos + item` 的定义一致。
+
+> 需要特别注意**数据膨胀**：如果原表有 100 万行，每行数组平均有 20 个元素，炸裂后理论上可能产生约 2000 万行，因此炸裂之后再做 `JOIN / GROUP BY / DISTINCT` 可能明显增加计算量，实际写 SQL 时通常应该先完成可以提前做的过滤。
+
+> 另一个注意点是空数组或 `NULL`：普通炸裂没有元素可输出时，原记录可能不会保留；如果业务要求即使数组为空也保留原记录，Hive / Spark SQL 中通常使用 `LATERAL VIEW OUTER explode(...)`。
+
+```sql
+SELECT
+    id,
+    name,
+    hobby
+FROM person
+LATERAL VIEW OUTER EXPLODE(hobbies) tmp AS hobby;
+```
+
+#### `LATERAL VIEW`
+
+`LATERAL VIEW` **不是函数，而是配合 UDTF 使用的一种 SQL 语法**。它会把 UDTF 应用到源表的每一行，让当前行生成一行或多行结果，然后把这些结果重新和当前源表行组合起来形成一个虚表。原笔记中的表述就是：将 UDTF 应用到源表的**每行数据**，把每行转换成一行或多行，并将输出结果与该源行连接起来。 因此 `explode()` 和 `LATERAL VIEW` 要分开理解：**`explode()` 负责把什么炸出来，`LATERAL VIEW` 负责把炸出的结果和原表哪一行对应起来。**
+
+- 基本结构：
+
+    ```sql
+    FROM 原表
+    LATERAL VIEW explode(数组字段) 虚表别名 AS 输出列名
+    ```
+
+    假设原表 `person`：
+
+    | id | name | hobbies           |
+    | -: | ---- | ----------------- |
+    |  1 | Amy  | `['game','swim']` |
+    |  2 | Bob  | `['run']`         |
+
+    执行：
+
+    ```sql
+    SELECT
+        id,
+        name,
+        hobby
+    FROM person
+    LATERAL VIEW EXPLODE(hobbies) tmp AS hobby;
+    ```
+
+    得到：
+
+    | id | name | hobby |
+    | -: | ---- | ----- |
+    |  1 | Amy  | game  |
+    |  1 | Amy  | swim  |
+    |  2 | Bob  | run   |
+
+    这里 `explode(hobbies)` 产生炸裂结果，`tmp` 是炸裂结果形成的**虚表别名**，`hobby` 是这个虚表输出字段的**列名**。这和原笔记中的解释一致。 分析时最好把 `FROM person LATERAL VIEW explode(hobbies) tmp AS hobby` 当成一个整体理解：对于 `person` 的当前一行，把 `hobbies` 炸开，然后将炸出来的每一个元素都复制并关联回当前的 `person` 行，所以 Amy 原本的一行最终变成两行，但 `id`、`name` 等原始信息仍然保留。
+
+- 如果输入是 `MAP`，因为 `explode(map)` 本身产生两列，因此 `AS` 后也要给两个输出字段命名：
+
+    ```sql
+    SELECT
+        id,
+        attr_name,
+        attr_value
+    FROM user_info
+    LATERAL VIEW explode(attrs) tmp AS attr_name, attr_value;
+    ```
+
+    假设原表：
+
+    | id | attrs                  |
+    | -: | ---------------------- |
+    |  1 | `{'level':10,'vip':1}` |
+
+    结果：
+
+    | id | attr_name | attr_value |
+    | -: | --------- | ---------: |
+    |  1 | level     |         10 |
+    |  1 | vip       |          1 |
+
+
+- 还需要特别注意多个 `LATERAL VIEW` 的**乘法效应**。
+
+    | id | arr1            | arr2    |
+    | -: | --------------- | ------- |
+    |  1 | `['A','B','C']` | `[1,2]` |
+
+    如果连续独立炸裂两个数组：
+
+    ```sql
+    FROM t
+    LATERAL VIEW EXPLODE(arr1) a AS x
+    LATERAL VIEW EXPLODE(arr2) b AS y
+    ```
+
+    结果可能是：
+
+    | id | x |  y |
+    | -: | - | -: |
+    |  1 | A |  1 |
+    |  1 | A |  2 |
+    |  1 | B |  1 |
+    |  1 | B |  2 |
+    |  1 | C |  1 |
+    |  1 | C |  2 |
+
+    也就是 `3 × 2 = 6` 行。因此多个数组需要先判断业务关系是“所有组合”还是“按照位置一一对应”，不能看到两个数组就直接连续炸裂。
+
+#### 2. `SPLIT()`
+
+`SPLIT()` 用于**按照指定分隔规则拆分字符串**，拆分后的返回结果是一个 `ARRAY` 数组。在列转行问题中，它经常负责先完成 `STRING → ARRAY`，再把数组交给 `explode()` 展开成多行。
+
+##### 语法
+
+```sql
+SPLIT(str, pattern)
+```
+
+* `str`：需要拆分的字符串。
+* `pattern`：分隔规则（在 Hive 中这里是正则表达式 pattern，可以是简单字符，也可以是更复杂的正则表达式）。
+* **返回值**：`ARRAY<STRING>`，即字符串数组。
+
+例如原表：
+
+| id | category              |
+| -: | --------------------- |
+|  1 | `Action,Comedy,Drama` |
+|  2 | `Comedy,Romance`      |
+
+执行：
+
+```sql
+SELECT
+    id,
+    split(category, ',') AS category_array
+FROM movie;
+```
+
+结果可以理解为：
+
+| id | category_array                |
+| -: | ----------------------------- |
+|  1 | `['Action','Comedy','Drama']` |
+|  2 | `['Comedy','Romance']`        |
+
+
+### 常用函数（行转列）
+
+#### 1. `collect_list()`
+
+`collect_list(expr)` 是一个**聚合函数**（多行聚合），作用是把一个分组中的多行 `expr` 收集起来，返回一个 `ARRAY`，而且**保留重复元素**。
+
+例如订单明细表：
+
+| user_id | product |
+| ------: | ------- |
+|       1 | A       |
+|       1 | B       |
+|       1 | A       |
+|       2 | C       |
+|       2 | D       |
+
+执行：
+
+```sql
+SELECT
+    user_id,
+    collect_list(product) AS products
+FROM orders
+GROUP BY user_id;
+```
+
+逻辑结果：
+
+| user_id | products        |
+| ------: | --------------- |
+|       1 | `['A','B','A']` |
+|       2 | `['C','D']`     |
+
+可以看到，用户 1 的商品 A 出现两次，`collect_list()` 会把这两次都保留下来。因此如果重复次数具有业务含义，比如一个用户真实发生了两次 `click`、一个商品被购买了三次、一个订单出现了多条同 SKU 记录，就应该使用 `collect_list()`，而不是自动去重。
+
+> 这类数组之后还可以继续交给 `size()` 统计长度、`array_contains()` 判断是否出现某个元素、`transform()` 做元素转换、`explode()` 再拆回明细，因此 `collect_list()` 更准确的理解是：**把一个分组内的明细保存为数组结构，供后续复杂数据处理。**
+
+> 不要依赖 `collect_list()` 默认的元素顺序。该函数是非确定性的，因为结果顺序取决于输入行顺序，而经过 shuffle 后行顺序可能发生变化。 可以进一步写 `sort_array(collect_list(score))`来得到稳定的顺序。
+
+
+
+#### 2. `collect_set()`
+
+`collect_set(expr)` 同样是**聚合函数**，也是把一个分组中的多行数据收集成一个 `ARRAY`，但它会**自动去重，只保留唯一元素**。原笔记中的定义是“收集并返回一个唯一元素的集合”。 因此选择 `collect_list()` 还是 `collect_set()`，关键不在于哪个函数更好，而在于**重复值有没有业务意义**。
+
+例如：
+
+| user_id | product |
+| ------: | ------- |
+|       1 | A       |
+|       1 | B       |
+|       1 | A       |
+|       1 | C       |
+
+分别使用：
+
+```sql
+SELECT
+    user_id,
+    collect_list(product) AS product_list,
+    collect_set(product) AS product_set
+FROM orders
+GROUP BY user_id;
+```
+
+逻辑上可以理解为：
+
+| user_id | product_list        | product_set     |
+| ------: | ------------------- | --------------- |
+|       1 | `['A','B','A','C']` | `['A','B','C']` |
+
+所以如果问题是“用户所有购买记录”，两次 A 都应该保留，适合 `collect_list()`；如果问题是“用户买过哪些不同商品”，只关心 A 是否出现过，适合 `collect_set()`。同样地，用户行为 `login、click、click、pay` 中，“完整行为明细”使用 `collect_list(event)`，“出现过哪些不同事件类型”使用 `collect_set(event)`。
+
+`collect_set()` 同样不能依赖结果顺序。如果需要按照数组元素自身稳定排序，一般继续使用`sort_array(collect_set(product))`。
+
+
+
+#### 3. `sort_array()`
+
+`sort_array(array[, ascendingOrder])` 是**数组排序函数**：输入一个数组，根据数组元素本身的自然顺序排序，最后仍然返回一个数组。原笔记基于 Spark 3.4.4 的说明是：该函数既支持升序也支持降序；对于 `double / float`，`NaN` 大于任何非 `NaN` 元素；升序时 `NULL` 放在数组开头，降序时 `NULL` 放在数组末尾。
+
+例如原表：
+
+| user_id | scores        |
+| ------: | ------------- |
+|       1 | `[90,70,85]`  |
+|       2 | `[60,100,80]` |
+
+执行：
+
+```sql
+SELECT
+    user_id,
+    sort_array(scores, true) AS score_asc,
+    sort_array(scores, false) AS score_desc
+FROM user_score;
+```
+
+结果：
+
+| user_id | score_asc     | score_desc    |
+| ------: | ------------- | ------------- |
+|       1 | `[70,85,90]`  | `[90,85,70]`  |
+|       2 | `[60,80,100]` | `[100,80,60]` |
+
+所以 `sort_array()` 的数据粒度完全没有变化：仍然是一行、仍然是一个数组，只是数组内部元素的排列顺序发生变化。它完全不局限于行转列，任何已经存在的数组字段都可以直接排序。
+
+最常见的组合之一是配合 `collect_list()` / `collect_set()`。
+
+> `sort_array()` 只能根据数组元素自己排序，而不能像普通 `ORDER BY` 一样任意指定另一个字段。
+
+
+#### 4. `concat_ws()`
+
+`concat_ws(sep[, str | array(str)]+)` 是**字符串拼接函数**，作用是使用指定的 `sep` 作为分隔符，把多个字符串或一个字符串数组拼成最终的字符串；原笔记还特别指出，它在拼接时会跳过 `NULL`。 `ws` 可以直接理解为 **with separator**，所以它和 `concat()` 最大区别就是可以指定分隔符。
+
+- 普通字符串字段：
+
+    | year | month | day |
+    | ---: | ----: | --: |
+    | 2026 |    08 |  30 |
+
+    执行：
+
+    ```sql
+    SELECT concat_ws('-', year, month, day) AS dt
+    FROM t
+    ```
+
+    结果：
+
+    | dt           |
+    | ------------ |
+    | `2026-08-30` |
+
+- 处理字符串数组：
+
+    | user_id | tags                      |
+    | ------: | ------------------------- |
+    |       1 | `['vip','game','active']` |
+    |       2 | `['new','mobile']`        |
+
+    执行：
+
+    ```sql
+    SELECT
+        user_id,
+        concat_ws(',', tags) AS tag_string
+    FROM user_tag;
+    ```
+
+    结果：
+
+    | user_id | tag_string        |
+    | ------: | ----------------- |
+    |       1 | `vip,game,active` |
+    |       2 | `new,mobile`      |
+
+#### 5. `CASE`
+
+`CASE` 是 SQL 中的**条件表达式**，作用是根据不同条件返回不同的值，可以理解成 `if / else if / else`。它本身不是聚合函数，也不只用于行转列；整个 `CASE ... END` 最终会计算成**一个值**，因此可以和 `SELECT`、聚合函数、`ORDER BY` 等组合使用。
+
+##### 语法
+
+`CASE` 主要有两种写法。
+
+* **搜索型 `CASE WHEN condition`**：适合范围判断、多字段判断、复杂条件。
+
+    ```sql
+    CASE
+        WHEN condition1 THEN result1
+        WHEN condition2 THEN result2
+        ...
+        ELSE default_result
+    END
+    ```
+
+    例如：
+
+    ```sql
+    CASE
+        WHEN score >= 90 THEN 'A'
+        WHEN score >= 80 THEN 'B'
+        WHEN score >= 60 THEN 'C'
+        ELSE 'D'
+    END
+    ```
+
+    `WHEN` 会**从上到下依次判断**，第一个满足条件的分支就是最终结果，所以条件顺序很重要。`WHEN` 后可以使用 `=、>、<、BETWEEN、IN、IS NULL、AND、OR` 等条件。
+
+* **简单型 `CASE col WHEN value`**：适合同一个字段和多个固定值做**等值匹配**。
+
+    ```sql
+    CASE col
+        WHEN value1 THEN result1
+        WHEN value2 THEN result2
+        ...
+        ELSE default_result
+    END
+    ```
+
+    例如：
+
+    ```sql
+    CASE status
+        WHEN 1 THEN '待支付'
+        WHEN 2 THEN '已支付'
+        WHEN 3 THEN '已完成'
+        ELSE '未知状态'
+    END
+    ```
+
+    它等价于：
+
+    ```sql
+    CASE
+        WHEN status = 1 THEN '待支付'
+        WHEN status = 2 THEN '已支付'
+        WHEN status = 3 THEN '已完成'
+        ELSE '未知状态'
+    END
+    ```
+
+- **`ELSE` 可以省略**：如果所有 `WHEN` 都不满足，并且没有写 `ELSE`，默认返回 `NULL`。
+
+    ```sql
+    CASE
+        WHEN score >= 60 THEN 'PASS'
+    END
+    ```
+
+    等价于：
+
+    ```sql
+    CASE
+        WHEN score >= 60 THEN 'PASS'
+        ELSE NULL
+    END
+    ```
+
+-  **返回值规则**：每个 `THEN` 和 `ELSE` 都返回一个值，整个 `CASE ... END` 最终也只返回一个值。各分支最好返回相同或兼容的数据类型，例如都返回数字或都返回字符串，避免隐式类型转换。
+
+> NULL 判断：判断空值必须使用 `IS NULL / IS NOT NULL`，不能使用 `= NULL / != NULL`。简单型 `CASE col WHEN NULL` 也不能可靠匹配 NULL，因为本质仍类似 `col = NULL`。
+
+
+##### 常见用法
+
+* **分类 / 打标签**：根据字段值生成新的类别字段。
+
+    ```sql
+    CASE
+        WHEN amount >= 10000 THEN 'S'
+        WHEN amount >= 3000 THEN 'A'
+        WHEN amount >= 500 THEN 'B'
+        ELSE 'C'
+    END AS user_level
+    ```
+
+* **固定值映射**：当一个字段有若干固定编码时，使用简单型 `CASE col WHEN value` 更简洁。
+
+    ```sql
+    CASE status
+        WHEN 1 THEN '待支付'
+        WHEN 2 THEN '已支付'
+        WHEN 3 THEN '已完成'
+        ELSE '未知'
+    END
+    ```
+
+* **条件求和**：满足条件时保留数值，否则返回 `0`，再交给 `SUM()` 聚合。(可以理解为：`CASE WHEN` 负责决定**哪些值参与计算**，`SUM()` 负责真正求和)
+
+    ```sql
+    SUM(
+        CASE
+            WHEN pay_type = 'game' THEN amount
+            ELSE 0
+        END
+    ) AS game_amount
+    ```
+
+* **条件计数**：满足条件记 `1`，否则记 `0`，最后求和。
+
+    ```sql
+    SUM(
+        CASE
+            WHEN status = 'paid' THEN 1
+            ELSE 0
+        END
+    ) AS paid_cnt
+    ```
+
+    也可以利用 `COUNT(expr)` 不统计 `NULL` 的特性：
+
+    ```sql
+    COUNT(
+        CASE
+            WHEN status = 'paid' THEN 1
+        END
+    )
+    ```
+
+* **行转列 / 条件聚合**：用 `CASE WHEN` 把不同类别的数据放进不同列，再通过 `GROUP BY + SUM()/MAX()` 合并多行。
+
+    ```sql
+    SELECT
+        product_id,
+        SUM(CASE WHEN store = 'store1' THEN price END) AS store1,
+        SUM(CASE WHEN store = 'store2' THEN price END) AS store2,
+        SUM(CASE WHEN store = 'store3' THEN price END) AS store3
+    FROM Products
+    GROUP BY product_id;
+    ```
+
+    **`CASE WHEN` 负责“分类放位置 / 造列”，聚合函数负责“多行合成一行”。**
+
+* **自定义排序**：当业务顺序和默认字典顺序不同，可以通过 `CASE` 人工生成排序权重。
+
+    ```sql
+    ORDER BY
+        CASE status
+            WHEN 'urgent' THEN 1
+            WHEN 'processing' THEN 2
+            WHEN 'completed' THEN 3
+            ELSE 4
+        END
+    ```
+
+* **复杂条件判断**：搜索型 `CASE WHEN` 可以组合多个条件。
+
+    ```sql
+    CASE
+        WHEN age < 18 THEN '未成年'
+        WHEN age BETWEEN 18 AND 59 THEN '成年'
+        ELSE '其他'
+    END
+    ```
+
+    也可以使用：
+
+    ```sql
+    WHEN city IN ('A', 'B')
+    WHEN score >= 60 AND attendance >= 80
+    WHEN value IS NULL
+    ```
+
+> 可出现的位置**：因为 `CASE ... END` 本质是一个表达式，所以可以出现在很多需要“值”的位置，例如 `SELECT`、`SUM/MAX/COUNT` 内部、`ORDER BY` 等。
+
+```sql
+SELECT CASE WHEN ... THEN ... END AS new_col
+
+SUM(CASE WHEN ... THEN ... END)
+
+ORDER BY CASE WHEN ... THEN ... END
+```
+
+#### 6. `TRANSFORM()`
+
+`TRANSFORM()` 是一个**数组高阶函数**，用于遍历 `ARRAY` 中的每个元素，对每个元素执行指定的转换逻辑，最后返回一个**新的数组**。转换后的数组长度与原数组相同，只是数组中的元素被重新处理。
+
+```sql
+transform(array, element -> expression)
+```
+
+* `array`：需要处理的数组
+* `element`：数组中的当前元素，可以自定义变量名，如 `x`
+* `expression`：对当前元素执行的转换逻辑
+* **返回值：新的 `ARRAY`**
+
+
+##### 语法
+
+- 基础用法
+
+    例如原表：
+
+    | id | scores       |
+    | -: | ------------ |
+    |  1 | `[10,20,30]` |
+    |  2 | `[40,50]`    |
+
+    ```sql
+    SELECT
+        id,
+        transform(scores, x -> x + 1) AS new_scores
+    FROM student;
+    ```
+
+    结果：
+
+    | id | new_scores   |
+    | -: | ------------ |
+    |  1 | `[11,21,31]` |
+    |  2 | `[41,51]`    |
+
+
+- `transform()` 还可以同时获取**元素和下标**：
+
+    ```sql
+    transform(array, (element, index) -> expression)
+    ```
+
+    资料中的示例：
+
+    ```sql
+    transform(array(1, 2, 3), (x, i) -> x + i)
+    ```
+
+    结果：
+
+    ```text
+    [1,3,5]
+    ```
+
+    其中数组下标从 `0` 开始，因此实际计算为 `1+0、2+1、3+2`。
+
+##### 常见用法
+
+* **对数组元素进行计算**
+
+    ```sql
+    transform(scores, x -> x * 10)
+    ```
+
+* **对字符串数组中的元素使用字符串函数**
+
+    ```sql
+    transform(tags, x -> upper(x))
+    ```
+
+* **结合 `CASE WHEN` 进行复杂转换**
+
+    ```sql
+    transform(
+        nums,
+        x -> CASE
+                WHEN x % 2 = 0 THEN x * 10
+                ELSE x
+            END
+    )
+    ```
+
+* **用于有序行转列**
+    
+    `collect_list()` / `collect_set()` 聚合后的结果本身就是 `ARRAY`，因此可以继续交给 `transform()` 处理。资料中 `transform()` 主要用于**有序行转列**：先把排序字段与目标字段组合起来并排序，再使用 `transform()` 对排好序的数组逐个处理，去掉辅助排序字段，只留下真正需要输出的数据。
+
+
+> `transform()` **只能处理 ARRAY 类型**，不能直接处理普通字符串、数字等非数组字段；`transform()` 处理后仍然返回数组，而且通常与原数组**元素数量相同**。
+
+
+### 列转行解法
+
+列转行就是把一行中的多个值拆成多行，核心思路是：**`split()` + 炸裂函数 `explode()`**。
+
+* **如果字段是 STRING**：先用 `split()` 拆成 `ARRAY`（如果字段本身就是 ARRAY，直接 `explode()`）
+* **`explode()`**：把数组中的每个元素炸成一行
+* **`LATERAL VIEW`**：把炸裂后的结果和原表其他字段组合起来
+
+
+常用模板：
+
+```sql
+SELECT
+    原表字段,
+    new_col
+FROM table_name
+LATERAL VIEW explode(
+    split(待拆字段, '分隔符')
+) tmp AS new_col;
+```
+
+例如原表：
+
+| title   | category              |
+| ------- | --------------------- |
+| Movie A | `Action,Comedy,Drama` |
+
+SQL：
+
+```sql
+SELECT
+    title,
+    category_new
+FROM movie
+LATERAL VIEW explode(split(category, ',')) tmp AS category_new;
+```
+
+结果：
+
+| title   | category_new |
+| ------- | ------------ |
+| Movie A | Action       |
+| Movie A | Comedy       |
+| Movie A | Drama        |
+
+
+> 如果原字段（假设 `hobbies = ['game','swim','movie']`）已经是数组，则不需要 `split()`:
+
+```sql
+SELECT id, name, hobby
+FROM person LATERAL VIEW explode(hobbies) tmp AS hobby;
+```
+
+
+### 行转列解法
+
+行转列本质上是**对多行数据进行聚合**：原来同一个主体的信息分散在多行，最终需要整理到更少的行或一行中。因此通常首先要确定**最终一行代表什么**，也就是找到 `GROUP BY` 的分组字段，再根据目标结果选择聚合方式。原资料把常见聚合方式归纳为两类：
+1. 常规聚合函数 `MAX()/SUM()` + `CASE WHEN`
+2. 数组聚合函数 `collect_list()/collect_set()`（通常再配合 `concat_ws()`）
+
+行转列常见的三种解决思路：
+
+- **`GROUP BY + collect_list()/collect_set() + concat_ws()`**：适合把同组多行数据收集到一个字段
+- **`GROUP BY + MAX()/SUM() + CASE WHEN`**：适合把某个字段的不同取值真正变成多个列
+- **没有现成字段可以直接聚合**：先“人工造一列”用于聚合；部分题目也可能使用 `UNION ALL` 直接拼接最终结果
+
+做题时可以按照下面的顺序判断：
+
+1. 先看最终一行代表什么，确定 `GROUP BY` 字段
+2. 再看原来的多行最终怎么保存：
+   - 多个值收进一个字段：`collect_list/set + concat_ws`
+   - 不同类型变成不同列：`CASE WHEN + MAX/SUM`
+3. (optional) 如果没有字段可以 `GROUP BY`，先人工构造一个用于聚合
+
+#### 例题 1：`GROUP BY + collect_set() + concat_ws()`
+
+把星座和血型相同的人归到一起，姓名之间使用 `|` 分隔。
+
+例如原表 `constellation`：
+
+| name | constellation_name | blood_type |
+| ---- | ------------------ | ---------- |
+| 孙悟空  | 白羊座            | A          |
+| 猪八戒  | 白羊座            | A          |
+| 宋宋   | 白羊座             | B          |
+| 大海   | 射手座             | A          |
+| 凤姐   | 射手座             | A          |
+
+目标结果：
+
+| constellation_name | blood_type | name       |
+| ------------------ | ---------- | ---------- |
+| 白羊座                | A          | `孙悟空\|猪八戒` |
+| 白羊座                | B          | `宋宋`       |
+| 射手座                | A          | `大海\|凤姐`   |
+
+1. 最终一行代表什么（确定分组字段）：一个“星座 + 血型”组合
+
+    ```sql
+    GROUP BY constellation_name, blood_type
+    ```
+
+2. 多行保存形式（多个值收进一个字段）：同一个组合中可能有多个人，需要先把组内姓名聚合起来，再用 `|` 拼接。资料给出的 SQL 是：
+
+    ```sql
+    SELECT
+        constellation_name,
+        blood_type,
+        concat_ws('|', collect_set(name)) AS name
+    FROM constellation
+    GROUP BY constellation_name, blood_type;
+    ```
+
+这里三个操作职责不同：`GROUP BY` 决定哪些行属于同一组，`collect_set()` 把组内多行姓名收集成数组，`concat_ws()` 再把数组拼成字符串（`concat_ws()` 本身不是聚合函数，因此不能直接聚合多行，必须先由 `collect_set()` 等函数完成组内聚合）。
+
+#### 例题 2：`GROUP BY + SUM() + CASE WHEN`
+
+把 `Products` 表转换成 `Result` 表，将不同 `store` 从行变成不同列。
+
+原表：
+
+| product_id | store  | price |
+| ---------: | ------ | ----: |
+|          0 | store1 |    95 |
+|          0 | store2 |   100 |
+|          0 | store3 |   105 |
+|          1 | store1 |    70 |
+|          1 | store3 |    80 |
+
+目标：
+
+| product_id | store1 | store2 | store3 |
+| ---------: | -----: | -----: | -----: |
+|          0 |     95 |    100 |    105 |
+|          1 |     70 |   NULL |     80 |
+
+1. 最终一行代表什么（确定分组字段）：最终是一种商品一行
+
+    ```sql
+    GROUP BY product_id
+    ```
+
+2. 多行保存形式（不同类型变成不同列）：在聚合之前，需要先解决“95 应该进入 `store1` 列、100 应该进入 `store2` 列”的问题，因此使用 `CASE WHEN`：
+
+    ```sql
+    CASE WHEN store = 'store1' THEN price ELSE NULL END
+    ```
+
+    三列一起处理后，可以把原数据理解成：
+
+    | product_id | store1 | store2 | store3 |
+    | ---------: | -----: | -----: | -----: |
+    |          0 |     95 |   NULL |   NULL |
+    |          0 |   NULL |    100 |   NULL |
+    |          0 |   NULL |   NULL |    105 |
+    |          1 |     70 |   NULL |   NULL |
+    |          1 |   NULL |   NULL |     80 |
+
+3. 最后再按 `product_id` 聚合，就可以把这些行压成一行。资料使用的 SQL 是：
+
+    ```sql
+    SELECT
+        product_id,
+        SUM(CASE WHEN store = 'store1' THEN price ELSE NULL END) AS store1,
+        SUM(CASE WHEN store = 'store2' THEN price ELSE NULL END) AS store2,
+        SUM(CASE WHEN store = 'store3' THEN price ELSE NULL END) AS store3
+    FROM Products
+    GROUP BY product_id;
+    ```
+
+
+`CASE WHEN` 负责“分类放位置 / 造列”，`GROUP BY + SUM()` 负责“把同一个 product 的多行合并成一行”（`SUM` 只会把非 `NULL` 的值加起来，但这里的 `SUM()` 主要充当**聚合桥梁**，并不是重点在把多个 store 的价格加在一起）。
+
+#### 例题 3：没有聚合字段
+
+输出每个大洲的姓名，每个大洲一列，并且姓名按照字典顺序排列。
+
+例如原表 `student`：
+
+| name   | continent |
+| ------ | --------- |
+| Jack   | America   |
+| Jane   | America   |
+| Xi     | Asia      |
+| Pascal | Europe    |
+
+目标类似：
+
+| America | Europe | Asia |
+| ------- | ------ | ---- |
+| Jack    | Pascal | Xi   |
+| Jane    | NULL   | NULL |
+
+1. 人工造 `id`： 原表没有一个类似 `product_id` 的字段告诉我们哪些记录应该出现在目标结果的同一行。
+
+    ```sql
+    WITH a AS (
+        SELECT
+            ROW_NUMBER() OVER (
+                PARTITION BY continent
+                ORDER BY name
+            ) AS id,
+            name,
+            continent
+        FROM student
+    )
+    ```
+
+    中间结果可以理解成：
+
+    | id | name   | continent |
+    | -: | ------ | --------- |
+    |  1 | Jack   | America   |
+    |  2 | Jane   | America   |
+    |  1 | Pascal | Europe    |
+    |  1 | Xi     | Asia      |
+
+    这样就人为建立了对应关系：各大洲的第 1 个姓名都是 `id = 1`，各大洲的第 2 个姓名都是 `id = 2`。之后就可以按照这个人工 `id` 做条件聚合。
+
+2. 多行保存形式（不同类型变成不同列）：使用 `MAX(CASE WHEN ...)` 把不同大洲的姓名放到对应列中（聚合成列）。
+
+    ```sql
+    SELECT
+        MAX(CASE continent WHEN 'America' THEN name ELSE NULL END) AS America,
+        MAX(CASE continent WHEN 'Europe'  THEN name ELSE NULL END) AS Europe,
+        MAX(CASE continent WHEN 'Asia'    THEN name ELSE NULL END) AS Asia
+    FROM a
+    GROUP BY id;
+    ```
+
+先判断目标结果中哪些数据应该处于同一行；如果原表没有这样的对应关系，就先人工构造出来，再使用普通的行转列方法。
+
+
+### 有序行转列解法
+
+
+有序行转列是把多行聚合成数组/字符串的同时，还要求结果按照指定字段排序。
+
+正常行转列用`collect_list(value)`不能保证最终顺序，因为 `collect_list()` / `collect_set()` 的结果顺序在发生 shuffle 后可能不确定。
+
+所以核心思路是：**不要直接对待输出字段排序，而是把“排序字段”和“待输出字段”绑定在一起 -> 排序 -> 再取出真正需要的字段。**
+
+#### 方法 1：拼接排序字段 + `sort_array()` + `transform()`
+
+先用`concat(delivery_time, customer_id)` 把排序字段放在待输出字段前面，然后`collect_list()` 聚合成数组，再用 `sort_array()` 排序，最后用 `transform()` 去掉前面的排序字段，只保留真正的目标字段。
+
+完整写法：
+
+```sql
+SELECT
+    rider_id,
+    concat_ws(
+        ',',
+        transform(
+            sort_array(collect_list(time_customer)),
+            x -> substr(x, 20)
+        )
+    ) AS customer_list
+FROM (
+    SELECT
+        rider_id,
+        concat(delivery_time, customer_id) AS time_customer
+    FROM ods_game_dev.t_delivery_orders
+) t
+GROUP BY rider_id;
+```
+
+其中：
+
+* `concat()`：把**排序字段 + 目标字段**绑定起来
+* `collect_list()`：聚合成数组
+* `sort_array()`：对数组排序
+* `transform()`：去掉前面的排序字段，只保留目标字段（资料这里用 `substr(x, 20)`，是因为前面的日期时间字符串长度固定为 19 位，因此从第 20 位开始取真正的 `customer_id`）
+* `concat_ws()`：最终拼成字符串
+
+
+#### 方法 2：`STRUCT` 绑定字段 + `array_sort()`
+
+比字符串拼接更直接的方法，是用`struct(delivery_time, customer_id)`把排序字段和目标字段组成一个 `STRUCT`，并把排序字段放在前面。接着，用 `array_sort()` 对数组进行排序。
+
+```sql
+SELECT
+    rider_id,
+    array_sort(
+        collect_list(
+            struct(delivery_time, customer_id)
+        )
+    ).customer_id AS customer_id_list
+FROM ods_game_dev.t_delivery_orders
+GROUP BY rider_id;
+```
+
+用排序字段和最终字段组成 `STRUCT`，排序字段放前面，排序完成后再通过 `.字段名` 提取真正需要的数据。
+
 
 ---
 ## 5. 同时在线问题
@@ -1126,6 +2117,298 @@ DATEDIFF(MAX(dt), MIN(dt)) + 1
 
 ## 6. 留存问题
 
+留存问题的核心在于如何保持用户的长期活跃与粘性，它直接反映了产品吸引力、用户满意度和运营效能。在业务题中，只要出现“留存率”、“次日留存”等关键词，即可迅速定位为留存问题。
+
+
+- 新用户留存：主要考察一批新用户(首次登录/活跃)后续的留存情况，通过分析新用户的行为数据，企业可以找出影响新用户留存的关键因素，如产品易用性、用户体验、价值感知等，并据此优化产品或服务，提高新用户留存率。
+- 产品功能留存：对产品或服务中各个功能的留存情况进行跟踪和分析。通过对比不同功能的留存率，企业可以了解哪些功能更受用户欢迎，哪些功能需要改进或优化。
+- 用户生命周期：用户生命周期是指用户从首次接触产品或服务到最终流失或成为忠实用户的整个过程。通过跟踪和分析用户在生命周期中的不同阶段的留存情况，可以制定更有针对性的用户运营策略，如新手引导、成长激励、挽留措施等，从而延长用户生命周期，提高用户价值和忠诚度。
+- 来源入口留存：类似于产品功能留存，主要考察通过不同渠道/入口进入产品的用户后续的留存情况。诚然，用户是否留存很大程度上取决于产品本身是否有足够的吸引力，但从哪里来的用户质量更高，也是我们需要关注的。
+
+### 留存问题核心参数
+
+- **新用户7日留存率**
+  - 计算公式：7日留存率 = （第7天仍然活跃的用户数 / 第1天新增用户数）* 100%
+  - 解释：该指标反映了新用户在注册或首次使用产品后的第7天是否仍然活跃。高留存率意味着产品能够吸引新用户并保持他们的兴趣，低留存率则可能表明产品存在问题或用户体验不佳
+  - 例子：假设某应用在1月1日有100位新注册用户，为了计算这100位用户的七日留存率，我们需要关注这些用户在1月7日（即注册后的第七天）是否再次使用该产品。
+
+- **新用户7日内留存率**
+    - 计算公式：用户在新增或使用产品后一周内（第1天至第7天）每天回到产品的用户数相加并去重，然后除以首日新增用户数 = （第1天至第7天仍然活跃的用户数 / 第1天新增用户数）* 100%
+    - 解释：该指标反映了新用户在注册或首次使用产品后的第2天至第7天是否仍然活跃。高留存率意味着产品能够吸引新用户并保持他们的兴趣，低留存率则可能表明产品存在问题或用户体验不佳
+    - 例子：如果第一天新增了100个用户，在接下来的七天内，分别有4、2、15、10、8、5、17个用户回到产品(这些用户不重复)，那么7日内留存率为（4+2+15+10+8+5+17）/ 100 = 61/100 = 61%。
+
+### 留存问题常用函数
+
+1. `DATE_FORMAT()`：统一日期粒度，登录时间如果带时分秒，通常先转成日期，再按“日期 + 用户”去重。
+
+    ```sql
+    date_format(log_time, 'yyyy-MM-dd')
+    ```
+
+2. `MIN()` / `ROW_NUMBER()`：找首次登录日期，如果题目考察**新用户留存**，需要先确定每个用户第一次登录的日期。
+
+    ```sql
+    MIN(login_date)
+    ```
+
+    或者：
+
+    ```sql
+    ROW_NUMBER() OVER (
+        PARTITION BY user_id
+        ORDER BY login_date
+    )
+    ```
+
+    然后取 `rk = 1`。资料明确说明这两种方式都可以用于计算首次登录日期。
+
+3. `DATEDIFF()`：计算两个日期相差多少天，是留存判断最核心的函数。
+
+    ```sql
+    datediff(后续登录日期, 基准日期)
+    ```
+
+4. `IF()` / `CASE WHEN`：给留存打标
+
+    ```sql
+    IF(datediff(b.login_date, a.login_date) = 1, 1,0)
+    ```
+    
+    即满足留存条件打 `1`，不满足打 `0`。
+
+
+5. `MAX()`：把同一个用户的多条留存记录压成一个标签，一个基准用户 `LEFT JOIN` 后可能对应多条后续登录记录，因此可以：
+
+    ```sql
+    MAX(
+        IF(datediff(b.login_date, a.login_date) = 1, 1, 0)
+    )
+    ```
+
+    只要该用户有一次满足条件，最终就是 `1`。资料的高效写法也是先按“日期 + 用户”聚合，并用 `MAX()` 得到用户级留存标签。
+
+6. `COUNT(DISTINCT)` / `SUM()` / `COUNT()`：计算留存率
+
+    - 方法一：
+
+        ```sql
+        COUNT(DISTINCT IF(flag = 1, user_id, NULL))
+        COUNT(DISTINCT user_id)
+        ```
+
+    - 方法二：先保证**日期 + 用户只有一行**，再：
+
+        ```sql
+        SUM(flag) / COUNT(1)
+        ```
+        
+        这种方式可以避免大量使用 `COUNT(DISTINCT)`，在大数据场景下一般效率更高。
+
+
+### 留存问题解法
+
+留存问题基本固定为**三步走**：
+
+1. 确定基准用户群体
+2. 为留存打标
+3. 计算留存率
+
+#### 1. 确定基准用户群体
+
+先判断题目到底要追踪哪批用户：
+
+* **新用户留存**：找每个用户的首次登录日期
+* **每日活跃用户留存**：当天登录过的用户就是基准用户
+
+所以第一步最重要的问题是： **最终要观察的是哪一批用户后续有没有回来？**
+
+如果原始表一天内同一用户有多条行为记录，应先：
+
+```sql
+GROUP BY 日期, user_id
+```
+
+保证每天每个用户只有一条，否则后续 JOIN 容易造成数据膨胀。资料将这一点作为留存题的重要注意事项。
+
+#### 2. 基准用户 `LEFT JOIN` 后续活跃记录并打标
+
+基准用户作为主表，LEFT JOIN 后续全量活跃数据，再用 `DATEDIFF()` 判断是否符合留存条件。使用 `LEFT JOIN`，是为了让**后续没有回来的人仍然保留在基准用户中。
+
+基本结构：
+
+```sql
+FROM base_user a
+LEFT JOIN activity b
+    ON a.user_id = b.user_id
+```
+
+然后：
+
+```sql
+IF(
+    datediff(b.login_date, a.base_date) = 留存天数, 1, 0
+) AS flag
+```
+
+同一用户可能关联到多条后续记录，因此通常再按：
+
+```sql
+GROUP BY base_date, user_id
+```
+
+并使用：
+
+```sql
+MAX(flag)
+```
+
+最终得到：
+
+| base_date | user_id | flag |
+| --------- | ------- | ---: |
+| 01-01     | A       |    1 |
+| 01-01     | B       |    0 |
+| 01-01     | C       |    1 |
+
+#### 3. 计算留存率
+
+核心公式：留存率 = 符合留存条件的用户数 / 基准用户总数
+
+```sql
+SELECT
+    base_date,
+    SUM(flag) / COUNT(1) AS retention_rate
+FROM t
+GROUP BY base_date;
+```
+
+#### 例子：计算每天新用户的次日留存率
+
+原始登录表 `user_login`：
+
+| user_id | login_date |
+| ------- | ---------- |
+| A       | 2026-01-01 |
+| A       | 2026-01-02 |
+| A       | 2026-01-04 |
+| B       | 2026-01-01 |
+| B       | 2026-01-03 |
+| C       | 2026-01-02 |
+| C       | 2026-01-03 |
+
+要求：计算**每天首次登录用户的次日留存率**。
+
+1. 找到每个用户首次登录日期
+
+    ```sql
+    WITH base_user AS (
+        SELECT
+            user_id,
+            MIN(login_date) AS first_login_date
+        FROM user_login
+        GROUP BY user_id
+    )
+    ```
+
+    得到：
+
+    | user_id | first_login_date |
+    | ------- | ---------------- |
+    | A       | 2026-01-01       |
+    | B       | 2026-01-01       |
+    | C       | 2026-01-02       |
+
+    因此：
+
+    ```text id
+    2026-01-01 新用户：A、B
+    2026-01-02 新用户：C
+    ```
+
+2. `LEFT JOIN` 后续登录记录并打留存标签
+
+    ```sql
+    SELECT
+        a.first_login_date,
+        a.user_id,
+        MAX(
+            CASE
+                WHEN datediff(b.login_date, a.first_login_date) = 1
+                THEN 1
+                ELSE 0
+            END
+        ) AS next_day_flag
+    FROM base_user a
+    LEFT JOIN user_login b
+        ON a.user_id = b.user_id
+    GROUP BY
+        a.first_login_date,
+        a.user_id;
+    ```
+
+    得到：
+
+    | first_login_date | user_id | next_day_flag |
+    | ---------------- | ------- | ------------: |
+    | 2026-01-01       | A       |             1 |
+    | 2026-01-01       | B       |             0 |
+    | 2026-01-02       | C       |             1 |
+
+    解释：
+
+    ```text
+    A：01-01 首次登录，01-02 又登录 -> 次日留存 = 1
+    B：01-01 首次登录，01-02 没登录 -> 次日留存 = 0
+    C：01-02 首次登录，01-03 又登录 -> 次日留存 = 1
+    ```
+
+    这里使用 `MAX()` 是因为一个用户可能关联到多条后续登录记录，只要其中一条满足次日条件，最终标签就是 `1`。
+
+3. 计算次日留存率
+
+    ```sql
+    WITH base_user AS (
+        SELECT
+            user_id,
+            MIN(login_date) AS first_login_date
+        FROM user_login
+        GROUP BY user_id
+    ),
+    user_flag AS (
+        SELECT
+            a.first_login_date,
+            a.user_id,
+            MAX(
+                CASE
+                    WHEN datediff(b.login_date, a.first_login_date) = 1
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS next_day_flag
+        FROM base_user a
+        LEFT JOIN user_login b
+            ON a.user_id = b.user_id
+        GROUP BY
+            a.first_login_date,
+            a.user_id
+    )
+
+    SELECT
+        first_login_date,
+        COUNT(1) AS new_user_num,
+        SUM(next_day_flag) AS next_day_user_num,
+        ROUND(SUM(next_day_flag) / COUNT(1), 2) AS next_day_retention
+    FROM user_flag
+    GROUP BY first_login_date;
+    ```
+
+    结果：
+
+    | first_login_date | new_user_num | next_day_user_num | next_day_retention |
+    | ---------------- | -----------: | ----------------: | -----------------: |
+    | 2026-01-01       |            2 |                 1 |               0.50 |
+    | 2026-01-02       |            1 |                 1 |               1.00 |
+
 ---
 
 ## 7. 开窗/聚合函数（重点）
@@ -1134,9 +2417,7 @@ DATEDIFF(MAX(dt), MIN(dt)) + 1
 
 ### 掐头去尾
 
-
 ### 合并区间
-
 
 ### 空值填充
 
@@ -1271,6 +2552,7 @@ FROM products;
 
 ---
 ## 9. JSON字符串与解析
+
 
 
 ---

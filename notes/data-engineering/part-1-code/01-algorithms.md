@@ -502,3 +502,172 @@ class Solution {
 ---
 ## 回溯与贪心
 
+### 复原IP地址（LeetCode 93）
+
+#### String
+
+* `length()`：长度
+* `charAt(i)`：取第 `i` 个字符
+* `equals(s)`：比较字符串内容
+* `contains(s)`：是否包含
+* `indexOf(s)`：查找位置，找不到返回 `-1`
+* `substring(a, b)`：截取 `[a, b)`
+* `replace(a, b)`：替换
+* `split(s)`：切割字符串
+* `toUpperCase()` / `toLowerCase()`：大小写转换
+* `trim()`：去除首尾空格
+* `startsWith(s)` / `endsWith(s)`：判断开头/结尾
+* `isEmpty()`：是否为空字符串
+* `Integer.parseInt(s)`：将字符串转换为整数
+* `Double.parseDouble(s)`：将字符串转换为双精度浮点数
+
+```java
+String s = "Hello Java";
+
+s.length();              // 10
+s.charAt(0);             // 'H'
+s.equals("Hello Java");  // true
+s.contains("Java");      // true
+s.indexOf("Java");       // 6
+s.substring(6);          // "Java"
+s.substring(0, 5);       // "Hello"
+s.replace("Java", "World");
+s.split(" ");
+```
+
+> `String` 不可变；字符串内容比较用 `equals()`，不要用 `==`。
+
+
+> `String` 不可变，不能直接插入字符（插入字符：`s.substring(0, i) + c + s.substring(i)`；频繁修改用 `StringBuilder`）：
+
+```java
+String s = "helo";
+s = s.substring(0, 3) + 'l' + s.substring(3); // "hello"
+
+StringBuilder sb = new StringBuilder("helo");
+sb.insert(3, 'l'); // "hello"
+```
+
+#### ArrayList
+
+不知道最后会有多少元素，通常用 ArrayList
+
+```java
+import java.util.ArrayList;
+ArrayList<String> list = new ArrayList<>();
+list.add(x);      // 加到最后
+list.get(i);      // 取第 i 个
+list.set(i, x);   // 修改第 i 个
+list.remove(i);   // 删除第 i 个
+list.size();      // 长度
+```
+
+#### 解法
+
+**思路：** 枚举 3 个分割点，把字符串切成 4 段，每段检查是否合法。
+
+```java
+class Solution {
+    public List<String> restoreIpAddresses(String s) {
+        List<String> ans = new ArrayList<>();
+
+        for (int i = 1; i <= 3 && i < s.length(); i++) {
+            for (int j = i + 1; j <= i + 3 && j < s.length(); j++) {
+                for (int k = j + 1; k <= j + 3 && k < s.length(); k++) {
+
+                    String a = s.substring(0, i);
+                    String b = s.substring(i, j);
+                    String c = s.substring(j, k);
+                    String d = s.substring(k);
+
+                    if (valid(a) && valid(b) && valid(c) && valid(d)) {
+                        ans.add(a + "." + b + "." + c + "." + d);
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    private boolean valid(String s) {
+        if (s.length() == 0 || s.length() > 3) return false;
+        if (s.length() > 1 && s.charAt(0) == '0') return false;
+        return Integer.parseInt(s) <= 255;
+    }
+}
+```
+
+**注意：**
+* 记得判断`"0"` 合法，`"01"` 不合法
+* `substring(a, b)` 为 `[a, b)`（分割点不能相同，否则会产生 `""`）
+* 截取时候不要超过字符串长度
+
+**复杂度：** 最多 `3³ = 27` 种分割，≈ `O(1)`。
+
+#### Backtracking（回溯法）
+
+回溯法就是把loop改成递归，在input长度不可控时，可以实现 pruning branch 效果，优化runtime。
+
+```java
+class Solution {
+    public List<String> restoreIpAddresses(String s) {
+        List<String> result = new ArrayList<>();
+        List<String> path = new ArrayList<>();
+
+        backtrack(s, 0, path, result);
+
+        return result;
+    }
+
+    private void backtrack(String s, int start, List<String> path, List<String> result) {
+        // 递归终止条件1：已经选了 4 段
+        if (path.size() == 4) {
+            // 递归终止条件2：刚好用完整个字符串
+            if (start == s.length()) {
+                result.add(String.join(".", path));
+            }
+            return;
+        }
+
+        // 当前这一段尝试长度 1-3
+        for (int len = 1; len <= 3; len++) {
+
+            int end = start + len;
+            if (end > s.length()) break; // 检查：超出字符串范围
+
+            String part = s.substring(start, end);
+
+            // 当前段不合法
+            if (!isValid(part)) continue;
+
+            // 1. 选择
+            path.add(part);
+
+            // 2. 继续选下一段
+            backtrack(s, end, path, result);
+
+            // 3. 撤销选择
+            path.remove(path.size() - 1);
+        }
+    }
+
+    private boolean isValid(String part) {
+        // 不能有前导 0
+        if (part.length() > 1 && part.charAt(0) == '0') {
+            return false;
+        }
+
+        // 必须 <= 255
+        return Integer.parseInt(part) <= 255;
+    }
+}
+```
+
+
+### 非递减子序列
+
+
+
+
+
+
