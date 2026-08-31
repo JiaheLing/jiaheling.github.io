@@ -666,8 +666,376 @@ class Solution {
 
 ### [回溯] 非递减子序列（LeetCode 491）
 
+最典型的回溯算法结构，必看！
 
+> 核心：Backtracking 枚举子序列 + `path` 最后一个元素保证非递减 + `Set` 同层去重 + 每次递归结束撤销 `path` 以恢复上一层状态。
 
+#### Set / HashSet
+
+`Set` 用来保存**不重复元素**，这题用于 Backtracking 的**同层去重**。
+
+```java
+import java.util.Set;
+import java.util.HashSet;
+
+Set<Integer> used = new HashSet<>();
+
+used.add(x);        // 添加元素
+used.contains(x);   // 是否已经存在 x
+used.remove(x);     // 删除 x
+used.size();        // 元素数量
+used.isEmpty();     // 是否为空
+```
+
+> `Set` 不允许重复元素。这题中每一层递归都创建一个新的 `used`，只记录“当前这一层已经选择过哪些数字”。
+
+#### List 相关操作
+
+```java
+path.isEmpty();                  // 是否为空
+path.get(i);                     // 获取第 i 个元素
+path.get(path.size() - 1);       // 获取最后一个元素
+path.add(x);                     // 添加元素
+path.remove(path.size() - 1);    // 删除最后一个元素
+new ArrayList<>(path);           // 复制当前 List
+```
+
+> 保存答案时必须使用 `new ArrayList<>(path)`，因为 `path` 在后续递归中还会继续被修改。
+
+#### 解法：Backtracking
+
+**目标：** 找出所有长度 `>= 2` 的非递减子序列。
+
+1. 为什么使用 Backtracking
+
+    每个位置都有“选 / 不选”的可能，而且选了一个数字后，还需要继续尝试后面的数字，因此需要枚举很多不同的子序列。
+
+    Backtracking 的基本结构：
+
+    ```java
+    做选择;
+    backtrack(...);
+    撤销选择;
+    ```
+
+    这题中对应：
+
+    ```java
+    path.add(nums[i]);                 // 选择当前数字
+    backtrack(nums, i + 1, path, ans); // 继续搜索后面的数字
+    path.remove(path.size() - 1);      // 撤销当前选择
+    ```
+
+2. `path`：保存当前子序列
+
+    ```java
+    List<Integer> path = new ArrayList<>();
+    ```
+
+    例如：
+
+    ```text
+    path = [4, 6]
+    ```
+
+    表示当前已经选择了 `4 -> 6`。
+
+    如果继续选择 `7`：
+
+    ```java
+    path.add(7);
+    ```
+
+    则：
+
+    ```text
+    path = [4, 6, 7]
+    ```
+
+3. `start`：保证子序列保持原数组顺序
+
+    每次选择 `nums[i]` 后，下一层只能从 `i + 1` 开始：
+
+    ```java
+    backtrack(nums, i + 1, path, ans);
+    ```
+
+    例如：
+
+    ```text
+    nums = [4, 6, 7, 7]
+            0  1  2  3
+    ```
+
+    选择 index `1` 的 `6` 后，只能继续搜索 index `2`、`3`，不能回头再选择 `4`。
+
+    > 因此 `start` 保证结果是“子序列”，而不是任意重新排列。
+
+4. 保证非递减
+
+    新加入的数字必须满足：
+
+    ```text
+    nums[i] >= path 最后一个数字
+    ```
+
+    判断：
+
+    ```java
+    if (!path.isEmpty()
+            && nums[i] < path.get(path.size() - 1)) {
+        continue;
+    }
+    ```
+
+    例如：
+
+    ```text
+    path = [4, 7]
+    当前 nums[i] = 6
+
+    6 < 7 -> 不能加入 -> continue
+    ```
+
+5. 长度 >= 2 就记录答案
+
+    ```java
+    if (path.size() >= 2) {
+        ans.add(new ArrayList<>(path));
+    }
+    ```
+
+    不需要等到走到数组末尾，因为：
+
+    ```text
+    [4,6]
+    ```
+
+    本身已经是一个合法答案，即使后面还能继续变成：
+
+    ```text
+    [4,6,7]
+    [4,6,7,7]
+    ```
+
+    保存答案时不能写：
+
+    ```java
+    ans.add(path); // 错误
+    ```
+
+    因为 `path` 是同一个 List，后面会继续 `add()` / `remove()`。
+
+    正确：
+
+    ```java
+    ans.add(new ArrayList<>(path));
+    ```
+
+    相当于把当前状态复制一份保存下来。
+
+6. 同层去重（重要）
+
+    例如：
+
+    ```text
+    nums = [4, 6, 7, 7]
+                |  |
+    ```
+
+    当：
+
+    ```text
+    path = [4,6]
+    ```
+
+    这一层如果选择第一个 `7`：
+
+    ```text
+    [4,6,7]
+    ```
+
+    再选择第二个 `7`：
+
+    ```text
+    [4,6,7]
+    ```
+
+    会产生完全相同的结果。
+
+    所以同一层中，同一个数字只能作为一次选择：
+
+    ```java
+    Set<Integer> used = new HashSet<>();
+
+    if (used.contains(nums[i])) {
+        continue;
+    }
+
+    used.add(nums[i]);
+    ```
+
+    > **同层去重：** `used` 只限制同一个父节点下的选择。例如当前 `path = [4,6]` 时，如果这一层有两个 `7`，无论选哪一个都会得到 `[4,6,7]`，所以第二个 `7` 应该跳过；但 `[4] -> [4,7] -> [4,7,7]` 是合法的，因为两个 `7` 位于不同递归层。因此 `used` 必须定义在 `backtrack()` 内部，使每一层递归都有自己独立的 `used`。同时，`used` 不需要在回溯时 `remove()`，因为它记录的是“这一层已经尝试过哪些数字”，即使某个分支已经搜索结束，这一层也不应该再次选择相同的数字。
+
+8. 撤销选择（重要）
+
+    这是 Backtracking 最重要的部分。
+
+    假设当前：
+
+    ```text
+    path = [4, 6]
+    ```
+
+    选择 `7`：
+
+    ```java
+    path.add(7);
+    ```
+
+    此时：
+
+    ```text
+    path = [4, 6, 7]
+    ```
+
+    然后进入递归：
+
+    ```java
+    backtrack(...);
+    ```
+
+    这一条以 `[4,6,7]` 开头的路线全部搜索完后，需要继续尝试 `[4,6]` 的其他选择。
+
+    所以必须：
+
+    ```java
+    path.remove(path.size() - 1);
+    ```
+
+    把状态恢复为：
+
+    ```text
+    [4, 6]
+    ```
+
+    然后才能从 `[4,6]` 出发尝试另一条分支。
+
+    > **回溯 = 递归搜索完一个分支后，把共享状态恢复到进入这个分支之前。**
+
+#### 搜索过程示例
+
+`nums = [4, 6, 7]`
+
+大致过程：
+
+```text
+path = []
+
+选择 4
+path = [4]
+    选择 6
+    path = [4,6]       -> 记录
+        选择 7
+        path = [4,6,7] -> 记录
+        撤销 7
+        path = [4,6]
+    撤销 6
+    path = [4]
+
+    选择 7
+    path = [4,7]       -> 记录
+    撤销 7
+    path = [4]
+
+撤销 4
+path = []
+
+选择 6
+path = [6]
+    选择 7
+    path = [6,7]       -> 记录
+    撤销 7
+
+撤销 6
+...
+```
+
+这就是“选择 -> 递归 -> 撤销 -> 尝试下一个选择”。
+
+#### 完整代码
+
+```java
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+
+        backtrack(nums, 0, path, ans);
+
+        return ans;
+    }
+
+    private void backtrack(
+        int[] nums,
+        int start,
+        List<Integer> path,
+        List<List<Integer>> ans
+    ) {
+        // 当前 path 已经是合法子序列
+        if (path.size() >= 2) {
+            ans.add(new ArrayList<>(path));
+        }
+
+        // 当前递归层已经使用过的数字
+        Set<Integer> used = new HashSet<>();
+
+        for (int i = start; i < nums.length; i++) {
+
+            // 条件 1：保证非递减
+            if (!path.isEmpty()
+                    && nums[i] < path.get(path.size() - 1)) {
+                continue;
+            }
+
+            // 条件 2：同层去重
+            if (used.contains(nums[i])) {
+                continue;
+            }
+
+            // 标记：这一层已经选择过 nums[i]
+            used.add(nums[i]);
+
+            // 1. 做选择
+            path.add(nums[i]);
+
+            // 2. 递归：从后一个位置继续搜索
+            backtrack(nums, i + 1, path, ans);
+
+            // 3. 撤销选择：恢复进入该分支前的 path
+            path.remove(path.size() - 1);
+        }
+    }
+}
+```
+
+#### 易错点
+
+* `start = i + 1`：保证子序列保持原数组顺序。
+* 数组不能先排序，否则会改变原数组顺序，得到原本不存在的子序列。
+* `path.size() >= 2` 就要记录答案，不需要等到数组遍历结束。
+* `ans.add(new ArrayList<>(path))`：必须复制当前 `path`。
+* `path.add()` 后递归结束必须 `path.remove()`，否则会污染下一条分支。
+* `used` 是**同层去重**，不是整个递归过程去重。
+* `used` 不需要回溯删除，因为同一层已经尝试过的值不能再次尝试。
+* `path` 需要回溯删除，因为它代表当前递归路径，返回上一层后必须恢复原状态。
+
+#### 复杂度
+
+- 时间复杂度：O(2^n)
+- 空间复杂度：O(n) 
 
 
 ### [贪心] 发饼干（LeetCode 455）
