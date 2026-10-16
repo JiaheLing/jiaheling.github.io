@@ -1,0 +1,508 @@
+% =======================
+% main.tex
+% Compile with XeLaTeX
+% All .tex files must be saved as UTF-8
+% =======================
+
+% Overleaf / cross-platform:
+\documentclass[
+  12pt,
+  openany,
+  UTF8,
+  fontset=fandol
+]{ctexrep}
+
+% On macOS, you may instead use:
+% \documentclass[12pt,openany,UTF8,fontset=mac]{ctexrep}
+
+% =======================
+% Chinese and Latin fonts
+% =======================
+
+% ctexrep automatically handles Chinese fonts and Chinese line breaking.
+
+% Times-like Latin text
+\setmainfont{TeX Gyre Termes}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{Latin Modern Mono}
+
+% Times-like mathematical font
+\usepackage{newtxmath}
+
+\usepackage{microtype}
+
+% Required by \IfStrEq
+\usepackage{xstring}
+
+% =======================
+% Chinese document names
+% =======================
+\ctexset{
+  contentsname = {目录},
+  figurename   = {图},
+  tablename    = {表},
+  appendixname = {附录},
+  bibname      = {参考文献}
+}
+
+% =======================
+% Page layout
+% =======================
+\usepackage[
+  letterpaper,
+  margin=0.7in
+]{geometry}
+
+\raggedbottom
+
+% =======================
+% Paragraph style
+% =======================
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% For standard Chinese paragraph indentation, replace the two lines above with:
+%
+% \setlength{\parindent}{2em}
+% \setlength{\parskip}{0pt}
+
+% =======================
+% SPACING RULES
+% =======================
+\newlength{\SectionBefore}
+\setlength{\SectionBefore}{12pt}
+
+\newlength{\BlockBefore}
+\setlength{\BlockBefore}{6pt}
+
+\newlength{\BlockAfter}
+\setlength{\BlockAfter}{6pt}
+
+% =======================
+% Headings
+% =======================
+\usepackage{titlesec}
+\usepackage[normalem]{ulem}
+
+\titlespacing*{\section}
+  {0pt}
+  {\SectionBefore}
+  {12pt}
+
+\titlespacing*{\subsection}
+  {0pt}
+  {\SectionBefore}
+  {6pt}
+
+\titlespacing*{\subsubsection}
+  {0pt}
+  {\BlockBefore}
+  {6pt}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsubsection}
+  {1em}
+  {\uline}
+
+% Report normally numbers only through subsection.
+% Uncomment this to number subsubsections as well:
+% \setcounter{secnumdepth}{3}
+
+% =======================
+% Lists
+% =======================
+\usepackage{enumitem}
+
+\setlist{
+  itemsep=2pt,
+  topsep=4pt,
+  parsep=0pt,
+  partopsep=0pt
+}
+
+% Optional Chinese-style enumerations:
+%
+% \setlist[enumerate,1]{label=\arabic*.}
+% \setlist[enumerate,2]{label=\arabic*)}
+% \setlist[enumerate,3]{label=\roman*.}
+
+% =======================
+% Mathematics
+% =======================
+\usepackage{mathtools}
+
+\let\openbox\relax
+\usepackage{amsthm}
+
+% =======================
+% Chinese theorem environments
+% =======================
+
+\newtheoremstyle{notes}
+  {\BlockBefore} % space above
+  {\BlockAfter}  % space below
+  {\itshape}     % body font
+  {}             % indentation
+  {\bfseries}    % heading font
+  {。}           % punctuation
+  {0.5em}        % space after heading
+  {}
+
+\newtheoremstyle{notesdefinition}
+  {\BlockBefore}
+  {\BlockAfter}
+  {\normalfont}
+  {}
+  {\bfseries}
+  {。}
+  {0.5em}
+  {}
+
+\theoremstyle{notes}
+\newtheorem{theorem}{定理}[chapter]
+
+\theoremstyle{notesdefinition}
+\newtheorem{definition}[theorem]{定义}
+\newtheorem{example}[theorem]{例}
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{remark}[theorem]{注}
+
+% Rename the proof environment
+\renewcommand{\proofname}{证明}
+
+% =======================
+% Colors and boxes
+% =======================
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+
+% Summary box
+\newtcolorbox{summarybox}{
+  enhanced,
+  boxrule=0.8pt,
+  colback=white,
+  colframe=black!50,
+  arc=2pt,
+  left=10pt,
+  right=10pt,
+  top=6pt,
+  bottom=6pt,
+  before skip=2\BlockBefore,
+  after skip=2\BlockAfter,
+  fonttitle=\bfseries,
+  title=错题集
+}
+
+% Intuition box
+\newtcolorbox{intuition}{
+  enhanced,
+  boxrule=0.4pt,
+  colback=black!2,
+  colframe=black!30,
+  arc=2pt,
+  left=10pt,
+  right=10pt,
+  top=6pt,
+  bottom=6pt,
+  before skip=\BlockBefore,
+  after skip=\BlockAfter,
+  fonttitle=\bfseries,
+  title=注释
+}
+
+% =======================
+% Code
+% =======================
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyvrb}
+
+\definecolor{pyKeyword}{RGB}{45,115,75}
+\definecolor{pyString}{RGB}{195,100,15}
+\definecolor{pyComment}{RGB}{115,115,115}
+\definecolor{pyBuiltin}{RGB}{25,95,170}
+
+% General code style
+\lstdefinestyle{mlcode}{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  breaklines=true,
+  breakatwhitespace=true,
+  keepspaces=true,
+  upquote=true,
+  showstringspaces=false,
+  frame=single,
+  rulecolor=\color{black!30},
+  numbers=left,
+  numberstyle=\scriptsize\color{black!55},
+  numbersep=8pt,
+  xleftmargin=12pt,
+  tabsize=2,
+  aboveskip=\BlockBefore,
+  belowskip=\BlockAfter
+}
+% Python style
+\lstdefinestyle{mlpython}{
+  style=mlcode,
+  language=Python,
+  keywordstyle=\bfseries\color{pyKeyword},
+  stringstyle=\color{pyString},
+  commentstyle=\itshape\color{pyComment},
+  emph={self,None,True,False},
+  emphstyle=\bfseries\color{pyBuiltin},
+  emph={[2]torch,nn,np,F},
+  emphstyle={[2]\bfseries\color{pyBuiltin}}
+}
+
+% Pseudocode language
+\lstdefinelanguage{pseudo}{
+  morekeywords={
+    for,
+    while,
+    if,
+    else,
+    return,
+    break,
+    continue,
+    repeat,
+    until,
+    foreach,
+    in,
+    do,
+    initialize
+  },
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]"
+}
+
+% Usage:
+% \begin{codeblock}
+% Python code
+% \end{codeblock}
+%
+% \begin{codeblock}[pseudo]
+% pseudocode
+% \end{codeblock}
+
+\lstnewenvironment{codeblock}[1][Python]{%
+  \IfStrEq{#1}{Python}
+    {\lstset{style=mlpython}}
+    {\lstset{style=mlcode,language=#1}}%
+}{}
+
+% =======================
+% Java code
+% =======================
+\lstdefinestyle{mljava}{
+  style=mlcode,
+  language=Java,
+  keywordstyle=\bfseries\color{pyKeyword},
+  stringstyle=\color{pyString},
+  commentstyle=\itshape\color{pyComment},
+  emph={String,System,out,println},
+  emphstyle=\bfseries\color{pyBuiltin}
+}
+
+% Java source code
+\lstnewenvironment{javacode}{%
+  \lstset{style=mljava}%
+}{}
+
+% Terminal commands
+\lstnewenvironment{terminalcode}{%
+  \lstset{
+    style=mlcode,
+    language=bash,
+    numbers=none
+  }%
+}{}
+
+% =======================
+% Plots
+% =======================
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,decorations.pathreplacing,fit,positioning,shadows,shapes}
+\usepackage{tabularx}
+\usepackage{array}
+% =======================
+% Header and footer
+% =======================
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{\nouppercase{\leftmark}}
+\rhead{}
+\cfoot{\thepage}
+
+\renewcommand{\headrulewidth}{0.3pt}
+
+% Prevent header-height warning
+\setlength{\headheight}{15pt}
+
+% =======================
+% Hyperlinks
+% =======================
+\usepackage[
+  colorlinks=false,
+  pdfborder={0 0 0}
+]{hyperref}
+
+\hypersetup{
+  pdfsubject = {课程笔记},
+  pdftitle   = {计算机科学与机器学习笔记},
+  pdfauthor  = {你的名字}
+}
+
+% Must be loaded after hyperref
+\usepackage[
+  nameinlink,
+  noabbrev
+]{cleveref}
+
+% Chinese cleveref names
+\crefname{chapter}{章}{章}
+\crefname{section}{节}{节}
+\crefname{subsection}{小节}{小节}
+\crefname{subsubsection}{小节}{小节}
+\crefname{equation}{式}{式}
+\crefname{figure}{图}{图}
+\crefname{table}{表}{表}
+\crefname{theorem}{定理}{定理}
+\crefname{definition}{定义}{定义}
+\crefname{example}{例}{例}
+\crefname{proposition}{命题}{命题}
+\crefname{lemma}{引理}{引理}
+\crefname{corollary}{推论}{推论}
+\crefname{remark}{注}{注}
+
+% =======================
+% Convenience macros
+% =======================
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+
+% =======================
+% Custom chapter page
+%
+% Does not print the default:
+% “第一章”
+%
+% The complete chapter title is supplied manually.
+% Example:
+% \chapterpage{第1章：计算机网络}
+% =======================
+\newcommand{\chapterpage}[1]{%
+  \clearpage
+  \refstepcounter{chapter}%
+  \addcontentsline{toc}{chapter}{#1}%
+  \thispagestyle{empty}%
+
+  % Vertical position
+  \vspace*{1.2in}
+
+  % Horizontal position
+  \hspace*{0.2in}
+
+  {\Huge\bfseries #1\par}
+
+  \clearpage
+  \markboth{#1}{#1}%
+}
+
+% =======================
+% Lecture header
+%
+% Usage:
+%
+% \lecture{计算机网络概述}{
+%   本讲介绍计算机网络的基本结构。
+% }
+%
+% Leave the second argument empty to omit the summary box:
+%
+% \lecture{计算机网络概述}{}
+% =======================
+\newcommand{\lecture}[2]{%
+  \section{#1}%
+  \IfStrEq{#2}{}{%
+    % No summary box
+  }{%
+    \begin{summarybox}
+      #2
+    \end{summarybox}
+  }%
+}
+
+% =======================
+% Begin document
+% =======================
+
+% Show chapters and sections in the table of contents
+\setcounter{tocdepth}{1}
+
+\begin{document}
+
+\tableofcontents
+\thispagestyle{empty}
+\clearpage
+
+% =======================
+% Notes start here
+% =======================
+
+% \chapterpage{Part I: Practice}
+
+\chapterpage{第1章：大数据架构}
+
+
+\chapterpage{第2章：数仓建模}
+\input{数仓建模}
+\clearpage
+
+\chapterpage{第3章：Spark}
+\input{mysql}
+\clearpage
+
+\chapterpage{第4章：Hive}
+\input{mysql}
+\clearpage
+
+\chapterpage{第5章：Hadoop}
+\input{mysql}
+\clearpage
+
+\chapterpage{第6章：Zookeeper}
+\input{mysql}
+\clearpage
+
+
+\chapterpage{第7章：TBD}
+\input{mysql}
+\clearpage
+
+
+% \chapterpage{Part II: Theory} 附录
+
+
+% \chapterpage{第9章：数据结构}
+% \input{mysql}
+% \clearpage
+
+% \chapterpage{第10章：数据库原理}
+% \input{mysql}
+% \clearpage
+
+% \chapterpage{第11章：计算机网络}
+% \input{mysql}
+% \clearpage
+
+\end{document}
